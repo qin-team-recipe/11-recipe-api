@@ -1,0 +1,115 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  // TODO: add the correct database connection string
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String @id @default(uuid())
+  name      String
+  email     String
+  chef      Chef?
+  Like      Like[]
+}
+
+model Chef {
+  id        String  @id @default(uuid())
+  user      User?    @relation(fields: [user_id], references: [id])
+  user_id   String? @unique
+  role      Int
+  name      String
+  profile   String?
+  image_url String?
+}
+
+// TODO: reletion
+// https://www.prisma.io/docs/concepts/components/prisma-schema/relations/one-to-one-relations
+model Follow {
+  id                String @id @default(uuid())
+  following_user_id String
+  follower_user_id  String
+}
+
+// model Following {
+//   id                String @id @default(uuid())
+//   user              User   @relation(fields: [following_user_id], references: [id])
+//   following_user_id String
+// }
+
+// model Follower {
+//   id                String @id @default(uuid())
+//   user              User   @relation(fields: [follower_user_id], references: [id])
+//   follower_user_id String
+// }
+
+model Link {
+  id           String  @id @default(uuid())
+  site_name    String
+  url          String
+  account_name String?
+}
+
+model Recipe {
+  id           String  @id @default(uuid())
+  name         String
+  overview     String?
+  serving_size Int
+  is_published Int
+  Like         Like[]
+  recipeImage  RecipeImage[]
+  recipeStep   RecipeStep[]
+  shoppingList ShoppingList[]
+}
+
+model Like {
+  id        String @id @default(uuid())
+  user      User   @relation(fields: [user_id], references: [id])
+  user_id   String
+  recipe    Recipe @relation(fields: [recipe_id], references: [id])
+  recipe_id String
+}
+
+model RecipeImage {
+  id        String @id @default(uuid())
+  recipe    Recipe @relation(fields: [recipe_id], references: [id])
+  recipe_id String
+  image_url String
+}
+
+model RecipeStep {
+  id          String  @id @default(uuid())
+  recipe      Recipe  @relation(fields: [recipe_id], references: [id])
+  recipe_id   String
+  description String
+  note        String?
+}
+
+model Ingredient {
+  id   String  @id @default(uuid())
+  name String
+  note String?
+}
+
+model ShoppingList {
+  id            String @id @default(uuid())
+  recipe        Recipe @relation(fields: [recipe_id], references: [id])
+  recipe_id     String
+  sort_order    Int
+  shopping_list ShoppingListIngredient[]
+}
+
+model ShoppingListIngredient {
+  id               String  @id @default(uuid())
+  shopping_list    ShoppingList @relation(fields: [shopping_list_id], references: [id])
+  shopping_list_id String
+  name             String
+  note             String?
+  is_bought        Boolean
+}
