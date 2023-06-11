@@ -2,9 +2,10 @@
   "name": "11-recipe-api",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "type": "module",
+  "main": "src/index.js",
   "scripts": {
-    "dev": "nodemon src/app.ts",
+    "start": "nodemon --exec ts-node src/index.ts",
     "migrate": "npx prisma migrate dev",
     "seed": "npx prisma db seed"
   },
