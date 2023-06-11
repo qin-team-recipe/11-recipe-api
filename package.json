@@ -5,7 +5,8 @@
   "type": "module",
   "main": "src/index.js",
   "scripts": {
-    "start": "nodemon --exec ts-node src/index.ts",
+    "start": "ts-node src/index.ts",
+    "dev": "nodemon --exec ts-node src/index.ts",
     "migrate": "npx prisma migrate dev",
     "seed": "npx prisma db seed"
   },
