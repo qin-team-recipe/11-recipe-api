@@ -1,5 +1,9 @@
 # 11-recipe-api
 recipe app backend
 
-docker build . -t test
-docker run -p 8080:8080 -d test
+docker-compose build
+docker-compose up
+
+docker exec -it 91d00a466b1e9d5425295c53535f98c9ef851c4f85240c1c21f8a5e4d6dd088b sh
+
+host: 172.29.0.2

@@ -1,20 +1,28 @@
-FROM node:18
+ FROM node:18
 
-# Create app directory
-WORKDIR /usr/src/app
+WORKDIR /app
 
-# Install app dependencies
-# A wildcard is used to ensure both package.json AND package-lock.json are copied
-# where available (npm@5+)
+# COPY package.json and package-lock.json files
 COPY package*.json ./
 
-RUN npm install
-# If you are building your code for production
-# RUN npm ci --omit=dev
+# generated prisma files
+COPY prisma ./prisma/
 
-# Bundle app source
+# COPY ENV variable
+COPY .env ./
+
+# COPY tsconfig.json file
+COPY tsconfig.json ./
+
+# COPY
 COPY . .
 
+RUN npm install
+
+RUN npx prisma generate
+
+# Run and expose the server on port 3000
 EXPOSE 8080
 
-CMD npm run start
+# A command to start the server
+CMD npm start
