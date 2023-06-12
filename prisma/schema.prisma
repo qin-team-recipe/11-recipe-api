@@ -8,108 +8,149 @@ generator client {
 datasource db {
   provider = "postgresql"
   // TODO: add the correct database connection string
-  url      = env("DATABASE_URL")
+  url      =    env("DATABASE_URL")
 }
 
 model User {
-  id        String @id @default(uuid())
-  name      String
-  email     String
-  chef      Chef?
-  Like      Like[]
+  id         String   @id @default(uuid())
+  name       String
+  email      String   @unique
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+  chef       Chef?
+  followers  Follow[] @relation("following")
+  followings Follow[] @relation("follower")
+  likes      Like[]
+
+  @@map("users")
 }
 
 model Chef {
-  id        String  @id @default(uuid())
-  user      User?    @relation(fields: [user_id], references: [id])
-  user_id   String? @unique
+  id        String   @id @default(uuid())
+  user      User?    @relation(fields: [userId], references: [id])
+  userId    String?  @unique @map("user_id")
   role      Int
   name      String
   profile   String?
-  image_url String?
+  imageUrl  String?  @map("image_url")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  links     Link[]
+
+  @@map("chefs")
 }
 
-// TODO: reletion
-// https://www.prisma.io/docs/concepts/components/prisma-schema/relations/one-to-one-relations
 model Follow {
-  id                String @id @default(uuid())
-  following_user_id String
-  follower_user_id  String
+  follower    User     @relation("follower", fields: [followerId], references: [id])
+  followerId  String   @map("follower_id")
+  following   User     @relation("following", fields: [followingId], references: [id])
+  followingId String   @map("following_id")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@id([followerId, followingId])
+  @@map("follows")
 }
-
-// model Following {
-//   id                String @id @default(uuid())
-//   user              User   @relation(fields: [following_user_id], references: [id])
-//   following_user_id String
-// }
-
-// model Follower {
-//   id                String @id @default(uuid())
-//   user              User   @relation(fields: [follower_user_id], references: [id])
-//   follower_user_id String
-// }
 
 model Link {
-  id           String  @id @default(uuid())
-  site_name    String
-  url          String
-  account_name String?
+  id          String   @id @default(uuid())
+  chef        Chef     @relation(fields: [chefId], references: [id])
+  chefId      String   @map("chef_id")
+  siteName    String   @map("site_name")
+  url         String
+  accountName String?  @map("account_name")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@map("links")
 }
 
 model Recipe {
-  id           String  @id @default(uuid())
-  name         String
-  overview     String?
-  serving_size Int
-  is_published Int
-  Like         Like[]
-  recipeImage  RecipeImage[]
-  recipeStep   RecipeStep[]
-  shoppingList ShoppingList[]
+  id            String         @id @default(uuid())
+  name          String
+  overview      String?
+  servingSize   Int            @map("serving_size")
+  isPublished   Int            @map("is_published")
+  createdAt     DateTime       @default(now()) @map("created_at")
+  updatedAt     DateTime       @updatedAt @map("updated_at")
+  likes         Like[]
+  recipeImages  RecipeImage[]
+  recipeSteps   RecipeStep[]
+  ingredients   Ingredient[]
+  shoppingLists ShoppingList[]
+
+  @@map("recipes")
 }
 
 model Like {
-  id        String @id @default(uuid())
-  user      User   @relation(fields: [user_id], references: [id])
-  user_id   String
-  recipe    Recipe @relation(fields: [recipe_id], references: [id])
-  recipe_id String
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String   @map("user_id")
+  recipe    Recipe   @relation(fields: [recipeId], references: [id])
+  recipeId  String   @map("recipe_id")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@id([userId, recipeId])
+  @@map("likes")
 }
 
 model RecipeImage {
-  id        String @id @default(uuid())
-  recipe    Recipe @relation(fields: [recipe_id], references: [id])
-  recipe_id String
-  image_url String
+  id        String   @id @default(uuid())
+  recipe    Recipe   @relation(fields: [recipeId], references: [id])
+  recipeId  String   @map("recipe_id")
+  imageUrl  String   @map("image_rul")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("recipe_images")
 }
 
 model RecipeStep {
-  id          String  @id @default(uuid())
-  recipe      Recipe  @relation(fields: [recipe_id], references: [id])
-  recipe_id   String
+  id          String   @id @default(uuid())
+  recipe      Recipe   @relation(fields: [recipeId], references: [id])
+  recipeId    String   @map("recipe_id")
+  step        Int
   description String
   note        String?
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@map("recipe_steps")
 }
 
 model Ingredient {
-  id   String  @id @default(uuid())
-  name String
-  note String?
+  id        String   @id @default(uuid())
+  recipe    Recipe   @relation(fields: [recipeId], references: [id])
+  recipeId  String   @map("recipe_id")
+  name      String
+  note      String?
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("ingredients")
 }
 
 model ShoppingList {
-  id            String @id @default(uuid())
-  recipe        Recipe @relation(fields: [recipe_id], references: [id])
-  recipe_id     String
-  sort_order    Int
-  shopping_list ShoppingListIngredient[]
+  id                      String                   @id @default(uuid())
+  recipe                  Recipe                   @relation(fields: [recipeId], references: [id])
+  recipeId                String                   @map("recipe_id")
+  sortOrder               Int                      @map("sort_order")
+  createdAt               DateTime                 @default(now()) @map("created_at")
+  updatedAt               DateTime                 @updatedAt @map("updated_at")
+  shoppingListIngredients ShoppingListIngredient[]
+
+  @@map("shopping_lists")
 }
 
 model ShoppingListIngredient {
-  id               String  @id @default(uuid())
-  shopping_list    ShoppingList @relation(fields: [shopping_list_id], references: [id])
-  shopping_list_id String
-  name             String
-  note             String?
-  is_bought        Boolean
+  id             String       @id @default(uuid())
+  shoppingList   ShoppingList @relation(fields: [shoppingListId], references: [id])
+  shoppingListId String       @map("shopping_list_id")
+  name           String
+  note           String?
+  isBought       Boolean      @default(false) @map("is_bought")
+  createdAt      DateTime     @default(now()) @map("created_at")
+  updatedAt      DateTime     @updatedAt @map("updated_at")
+
+  @@map("shopping_list_ingredients")
 }
