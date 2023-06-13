@@ -8,19 +8,23 @@ generator client {
 datasource db {
   provider = "postgresql"
   // TODO: add the correct database connection string
-  url      =    env("DATABASE_URL")
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  USER
+  CHEF
 }
 
 model User {
-  id         String   @id @default(uuid())
-  name       String
-  email      String   @unique
-  createdAt  DateTime @default(now()) @map("created_at")
-  updatedAt  DateTime @updatedAt @map("updated_at")
-  chef       Chef?
-  followers  Follow[] @relation("following")
-  followings Follow[] @relation("follower")
-  likes      Like[]
+  id        String   @id @default(uuid())
+  name      String   @db.VarChar(255)
+  email     String   @unique @db.VarChar(255)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  chef      Chef?
+  follows   Follow[]
+  likes     Like[]
 
   @@map("users")
 }
@@ -29,22 +33,23 @@ model Chef {
   id        String   @id @default(uuid())
   user      User?    @relation(fields: [userId], references: [id])
   userId    String?  @unique @map("user_id")
-  role      Int
-  name      String
+  role      Role     @default(USER)
+  name      String   @db.VarChar(255)
   profile   String?
   imageUrl  String?  @map("image_url")
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
   links     Link[]
+  follows   Follow[]
 
   @@map("chefs")
 }
 
 model Follow {
-  follower    User     @relation("follower", fields: [followerId], references: [id])
-  followerId  String   @map("follower_id")
-  following   User     @relation("following", fields: [followingId], references: [id])
-  followingId String   @map("following_id")
+  chef        Chef     @relation(fields: [followerId], references: [id])
+  followerId  String   @map("follower_id") @db.Uuid
+  user        User     @relation(fields: [followingId], references: [id])
+  followingId String   @map("following_id") @db.Uuid
   createdAt   DateTime @default(now()) @map("created_at")
   updatedAt   DateTime @updatedAt @map("updated_at")
 
@@ -55,10 +60,10 @@ model Follow {
 model Link {
   id          String   @id @default(uuid())
   chef        Chef     @relation(fields: [chefId], references: [id])
-  chefId      String   @map("chef_id")
-  siteName    String   @map("site_name")
+  chefId      String   @map("chef_id") @db.Uuid
+  siteName    String   @map("site_name") @db.VarChar(255)
   url         String
-  accountName String?  @map("account_name")
+  accountName String?  @map("account_name") @db.VarChar(255)
   createdAt   DateTime @default(now()) @map("created_at")
   updatedAt   DateTime @updatedAt @map("updated_at")
 
@@ -67,10 +72,10 @@ model Link {
 
 model Recipe {
   id            String         @id @default(uuid())
-  name          String
+  name          String         @db.VarChar(255)
   overview      String?
-  servingSize   Int            @map("serving_size")
-  isPublished   Int            @map("is_published")
+  servingSize   String         @map("serving_size") @db.VarChar(255)
+  isPublished   Int            @map("is_published") @db.SmallInt
   createdAt     DateTime       @default(now()) @map("created_at")
   updatedAt     DateTime       @updatedAt @map("updated_at")
   likes         Like[]
@@ -84,9 +89,9 @@ model Recipe {
 
 model Like {
   user      User     @relation(fields: [userId], references: [id])
-  userId    String   @map("user_id")
+  userId    String   @map("user_id") @db.Uuid
   recipe    Recipe   @relation(fields: [recipeId], references: [id])
-  recipeId  String   @map("recipe_id")
+  recipeId  String   @map("recipe_id") @db.Uuid
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
@@ -97,7 +102,7 @@ model Like {
 model RecipeImage {
   id        String   @id @default(uuid())
   recipe    Recipe   @relation(fields: [recipeId], references: [id])
-  recipeId  String   @map("recipe_id")
+  recipeId  String   @map("recipe_id") @db.Uuid
   imageUrl  String   @map("image_rul")
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
@@ -108,8 +113,8 @@ model RecipeImage {
 model RecipeStep {
   id          String   @id @default(uuid())
   recipe      Recipe   @relation(fields: [recipeId], references: [id])
-  recipeId    String   @map("recipe_id")
-  step        Int
+  recipeId    String   @map("recipe_id") @db.Uuid
+  step        Int      @db.SmallInt
   description String
   note        String?
   createdAt   DateTime @default(now()) @map("created_at")
@@ -121,8 +126,8 @@ model RecipeStep {
 model Ingredient {
   id        String   @id @default(uuid())
   recipe    Recipe   @relation(fields: [recipeId], references: [id])
-  recipeId  String   @map("recipe_id")
-  name      String
+  recipeId  String   @map("recipe_id") @db.Uuid
+  name      String   @db.VarChar(255)
   note      String?
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
@@ -133,8 +138,8 @@ model Ingredient {
 model ShoppingList {
   id                      String                   @id @default(uuid())
   recipe                  Recipe                   @relation(fields: [recipeId], references: [id])
-  recipeId                String                   @map("recipe_id")
-  sortOrder               Int                      @map("sort_order")
+  recipeId                String                   @map("recipe_id") @db.Uuid
+  sortOrder               Int                      @map("sort_order") @db.SmallInt
   createdAt               DateTime                 @default(now()) @map("created_at")
   updatedAt               DateTime                 @updatedAt @map("updated_at")
   shoppingListIngredients ShoppingListIngredient[]
@@ -145,8 +150,8 @@ model ShoppingList {
 model ShoppingListIngredient {
   id             String       @id @default(uuid())
   shoppingList   ShoppingList @relation(fields: [shoppingListId], references: [id])
-  shoppingListId String       @map("shopping_list_id")
-  name           String
+  shoppingListId String       @map("shopping_list_id") @db.Uuid
+  name           String       @db.VarChar(255)
   note           String?
   isBought       Boolean      @default(false) @map("is_bought")
   createdAt      DateTime     @default(now()) @map("created_at")

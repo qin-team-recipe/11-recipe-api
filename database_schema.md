@@ -51,7 +51,7 @@
 | シェフID | chef_id | フォローするシェフのID(UUID),外部キー | String | -      | ○        | ○     |
 | 名前           | name         | レシピ名                                    | String | -      | ○        | -     |
 | 概要           | overview     | レシピの概要                                | String | -      | -        | -     |
-| 何人分         | serving_size | レシピの分量（何人分か）                    | Integer   | -      | ○        | -     |
+| 何人分         | serving_size | レシピの分量（何人分か）                    | String   | -      | ○        | -     |
 | 公開ステータス | is_published | レシピの公開ステータス (下書き: 0, 公開: 1) | Integer   | -      | ○        | -     |
 | 作成日時       | created_at   | レコードの作成日時                          | DateTime   | -      | ○        | -     |
 | 更新日時       | updated_at   | レコードの更新日時                          | DateTime   | -      | ○        | -     |
