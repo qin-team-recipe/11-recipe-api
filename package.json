@@ -4,7 +4,12 @@
   "description": "recipe app backend",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "ts-node-dev --respawn src/index.ts",
+    "clean": "rimraf dist",
+    "tsc": "tsc",
+    "build": "npm-run-all clean tsc",
+    "start": "node ."
   },
   "author": "",
   "license": "ISC",
@@ -14,8 +19,11 @@
     "@types/node": "^20.3.1",
     "express": "^4.18.2",
     "nodemon": "^2.0.22",
+    "npm-run-all": "^4.1.5",
     "prisma": "^4.15.0",
+    "rimraf": "^5.0.1",
     "ts-node": "^10.9.1",
+    "ts-node-dev": "^2.0.0",
     "typescript": "^5.1.3"
   },
   "dependencies": {
