@@ -9,6 +9,10 @@ dbのcontainerを立ち上げる
 ```
 docker-compose up -d
 ```
+DockerのDBに接続するためにローカルに`.env`ファイルを作成し以下を追記する
+```
+DATABASE_URL="postgresql://postgres:password@localhost:5433/recipeapp"
+```
 
 schema.prismaをmigrateしてDBおよびテーブルを作成する
 ```
