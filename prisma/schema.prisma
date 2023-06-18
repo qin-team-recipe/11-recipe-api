@@ -87,9 +87,11 @@ model Recipe {
   id            String         @id @default(uuid())
   chef          Chef           @relation(fields: [chefId], references: [id])
   chefId        String         @map("chef_id")
+  // name null許容
   name          String         @db.VarChar(255)
   overview      String?
   servingSize   String         @map("serving_size") @db.VarChar(255)
+  // TODO isPublishedではないものにする　ステータスが３つ必要そう
   isPublished   Int            @map("is_published") @db.SmallInt
   createdAt     DateTime       @default(now()) @map("created_at")
   updatedAt     DateTime       @updatedAt @map("updated_at")
@@ -137,6 +139,8 @@ model RecipeStep {
 
   @@map("recipe_steps")
 }
+
+// TODO RecipeLinkテーブルを作成する
 
 model Ingredient {
   id        String   @id @default(uuid())
