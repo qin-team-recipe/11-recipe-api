@@ -16,15 +16,26 @@ enum Role {
   CHEF
 }
 
+enum SiteType {
+  TWITTER
+  INSTAGRAM
+  FACEBOOK
+  YOUTUBE
+  BLOG
+  OTHER
+}
+
 model User {
-  id        String   @id @default(uuid())
-  name      String   @db.VarChar(255)
-  email     String   @unique @db.VarChar(255)
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
-  chef      Chef?
-  follows   Follow[]
-  likes     Like[]
+  id            String         @id @default(uuid())
+  name          String         @db.VarChar(255)
+  email         String         @unique @db.VarChar(255)
+  createdAt     DateTime       @default(now()) @map("created_at")
+  updatedAt     DateTime       @updatedAt @map("updated_at")
+  chef          Chef?
+  follows       Follow[]
+  likes         Like[]
+  shoppingLists ShoppingList[]
+  shoppingMemos ShoppingMemo[]
 
   @@map("users")
 }
@@ -41,6 +52,7 @@ model Chef {
   updatedAt DateTime @updatedAt @map("updated_at")
   links     Link[]
   follows   Follow[]
+  recipes   Recipe[]
 
   @@map("chefs")
 }
@@ -59,6 +71,7 @@ model Follow {
 
 model Link {
   id          String   @id @default(uuid())
+  siteType    SiteType @map("site_type")
   chef        Chef     @relation(fields: [chefId], references: [id])
   chefId      String   @map("chef_id")
   siteName    String   @map("site_name") @db.VarChar(255)
@@ -72,6 +85,8 @@ model Link {
 
 model Recipe {
   id            String         @id @default(uuid())
+  chef          Chef           @relation(fields: [chefId], references: [id])
+  chefId        String         @map("chef_id")
   name          String         @db.VarChar(255)
   overview      String?
   servingSize   String         @map("serving_size") @db.VarChar(255)
@@ -137,6 +152,8 @@ model Ingredient {
 
 model ShoppingList {
   id                      String                   @id @default(uuid())
+  user                    User                     @relation(fields: [userId], references: [id])
+  userId                  String                   @map("user_id")
   recipe                  Recipe                   @relation(fields: [recipeId], references: [id])
   recipeId                String                   @map("recipe_id")
   sortOrder               Int                      @map("sort_order") @db.SmallInt
@@ -158,4 +175,17 @@ model ShoppingListIngredient {
   updatedAt      DateTime     @updatedAt @map("updated_at")
 
   @@map("shopping_list_ingredients")
+}
+
+model ShoppingMemo {
+  id        String   @id @default(uuid())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String   @map("user_id")
+  name      String   @db.VarChar(255)
+  note      String?
+  isBought  Boolean  @default(false) @map("is_bought")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("shopping_memos")
 }
