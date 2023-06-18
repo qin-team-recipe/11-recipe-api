@@ -47,9 +47,9 @@ model Chef {
 
 model Follow {
   chef        Chef     @relation(fields: [followerId], references: [id])
-  followerId  String   @map("follower_id") @db.Uuid
+  followerId  String   @map("follower_id")
   user        User     @relation(fields: [followingId], references: [id])
-  followingId String   @map("following_id") @db.Uuid
+  followingId String   @map("following_id")
   createdAt   DateTime @default(now()) @map("created_at")
   updatedAt   DateTime @updatedAt @map("updated_at")
 
@@ -60,7 +60,7 @@ model Follow {
 model Link {
   id          String   @id @default(uuid())
   chef        Chef     @relation(fields: [chefId], references: [id])
-  chefId      String   @map("chef_id") @db.Uuid
+  chefId      String   @map("chef_id")
   siteName    String   @map("site_name") @db.VarChar(255)
   url         String
   accountName String?  @map("account_name") @db.VarChar(255)
@@ -89,9 +89,9 @@ model Recipe {
 
 model Like {
   user      User     @relation(fields: [userId], references: [id])
-  userId    String   @map("user_id") @db.Uuid
+  userId    String   @map("user_id")
   recipe    Recipe   @relation(fields: [recipeId], references: [id])
-  recipeId  String   @map("recipe_id") @db.Uuid
+  recipeId  String   @map("recipe_id")
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
@@ -102,7 +102,7 @@ model Like {
 model RecipeImage {
   id        String   @id @default(uuid())
   recipe    Recipe   @relation(fields: [recipeId], references: [id])
-  recipeId  String   @map("recipe_id") @db.Uuid
+  recipeId  String   @map("recipe_id")
   imageUrl  String   @map("image_rul")
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
@@ -113,7 +113,7 @@ model RecipeImage {
 model RecipeStep {
   id          String   @id @default(uuid())
   recipe      Recipe   @relation(fields: [recipeId], references: [id])
-  recipeId    String   @map("recipe_id") @db.Uuid
+  recipeId    String   @map("recipe_id")
   step        Int      @db.SmallInt
   description String
   note        String?
@@ -126,7 +126,7 @@ model RecipeStep {
 model Ingredient {
   id        String   @id @default(uuid())
   recipe    Recipe   @relation(fields: [recipeId], references: [id])
-  recipeId  String   @map("recipe_id") @db.Uuid
+  recipeId  String   @map("recipe_id")
   name      String   @db.VarChar(255)
   note      String?
   createdAt DateTime @default(now()) @map("created_at")
@@ -138,7 +138,7 @@ model Ingredient {
 model ShoppingList {
   id                      String                   @id @default(uuid())
   recipe                  Recipe                   @relation(fields: [recipeId], references: [id])
-  recipeId                String                   @map("recipe_id") @db.Uuid
+  recipeId                String                   @map("recipe_id")
   sortOrder               Int                      @map("sort_order") @db.SmallInt
   createdAt               DateTime                 @default(now()) @map("created_at")
   updatedAt               DateTime                 @updatedAt @map("updated_at")
@@ -150,7 +150,7 @@ model ShoppingList {
 model ShoppingListIngredient {
   id             String       @id @default(uuid())
   shoppingList   ShoppingList @relation(fields: [shoppingListId], references: [id])
-  shoppingListId String       @map("shopping_list_id") @db.Uuid
+  shoppingListId String       @map("shopping_list_id")
   name           String       @db.VarChar(255)
   note           String?
   isBought       Boolean      @default(false) @map("is_bought")

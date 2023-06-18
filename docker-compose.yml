@@ -1,0 +1,15 @@
+services:
+  postgres:
+    image: postgres:13
+    container_name: 11-recipe-db
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=recipeapp
+    ports:
+      - 5433:5432
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+
+volumes:
+  postgres_data:
