@@ -23,8 +23,8 @@ async function main() {
                 {
                   name: getRecipeName(),
                   overview: faker.lorem.paragraph(),
-                  servingSize: "faker.datatype.number()",
-                  isPublished: 1,
+                  servingSize: 2,
+                  status: 'PUBLISHED',
                   recipeImages: {
                     create: {
                       imageUrl: faker.image.urlLoremFlickr({
@@ -37,37 +37,30 @@ async function main() {
                       {
                         step: 1,
                         description: faker.lorem.paragraph(),
-                        note: faker.lorem.sentence(),
                       },
                       {
                         step: 2,
                         description: faker.lorem.paragraph(),
-                        note: faker.lorem.sentence(),
                       },
                       {
                         step: 3,
                         description: faker.lorem.paragraph(),
-                        note: faker.lorem.sentence(),
                       },
                     ],
                   },
-                  ingredients: {
+                  recipeIngredients: {
                     create: [
                       {
-                        name: getIngredientName(),
-                        note: faker.lorem.sentence(),
+                        text: getIngredientName(),
                       },
                       {
-                        name: getIngredientName(),
-                        note: faker.lorem.sentence(),
+                        text: getIngredientName(),
                       },
                       {
-                        name: getIngredientName(),
-                        note: faker.lorem.sentence(),
+                        text: getIngredientName(),
                       },
                       {
-                        name: getIngredientName(),
-                        note: faker.lorem.sentence(),
+                        text: getIngredientName(),
                       },
                     ],
                   },
@@ -75,8 +68,8 @@ async function main() {
                 {
                   name: getRecipeName(),
                   overview: faker.lorem.paragraph(),
-                  servingSize: "faker.datatype.number()",
-                  isPublished: 1,
+                  servingSize: 2,
+                  status: 'PUBLISHED',
                   recipeImages: {
                     create: {
                       imageUrl: faker.image.urlLoremFlickr({
@@ -89,37 +82,30 @@ async function main() {
                       {
                         step: 1,
                         description: faker.lorem.paragraph(),
-                        note: faker.lorem.sentence(),
                       },
                       {
                         step: 2,
                         description: faker.lorem.paragraph(),
-                        note: faker.lorem.sentence(),
                       },
                       {
                         step: 3,
                         description: faker.lorem.paragraph(),
-                        note: faker.lorem.sentence(),
                       },
                     ],
                   },
-                  ingredients: {
+                  recipeIngredients: {
                     create: [
                       {
-                        name: getIngredientName(),
-                        note: faker.lorem.sentence(),
+                        text: getIngredientName(),
                       },
                       {
-                        name: getIngredientName(),
-                        note: faker.lorem.sentence(),
+                        text: getIngredientName(),
                       },
                       {
-                        name: getIngredientName(),
-                        note: faker.lorem.sentence(),
+                        text: getIngredientName(),
                       },
                       {
-                        name: getIngredientName(),
-                        note: faker.lorem.sentence(),
+                        text: getIngredientName(),
                       },
                     ],
                   },
@@ -131,7 +117,7 @@ async function main() {
         shoppingMemos: {
           create: [
             {
-              name: getIngredientName(),
+              text: getIngredientName(),
             },
           ],
         },
@@ -217,11 +203,13 @@ async function main() {
             {
               name: getRecipeName(),
               overview: faker.lorem.paragraph(),
-              servingSize: "faker.datatype.number()",
-              isPublished: 1,
+              servingSize: 2,
+              status: 'PUBLISHED',
               recipeImages: {
                 create: {
-                  imageUrl: faker.image.urlLoremFlickr({ category: "food" }),
+                  imageUrl: faker.image.urlLoremFlickr({
+                    category: "food",
+                  }),
                 },
               },
               recipeSteps: {
@@ -229,37 +217,30 @@ async function main() {
                   {
                     step: 1,
                     description: faker.lorem.paragraph(),
-                    note: faker.lorem.sentence(),
                   },
                   {
                     step: 2,
                     description: faker.lorem.paragraph(),
-                    note: faker.lorem.sentence(),
                   },
                   {
                     step: 3,
                     description: faker.lorem.paragraph(),
-                    note: faker.lorem.sentence(),
                   },
                 ],
               },
-              ingredients: {
+              recipeIngredients: {
                 create: [
                   {
-                    name: getIngredientName(),
-                    note: faker.lorem.sentence(),
+                    text: getIngredientName(),
                   },
                   {
-                    name: getIngredientName(),
-                    note: faker.lorem.sentence(),
+                    text: getIngredientName(),
                   },
                   {
-                    name: getIngredientName(),
-                    note: faker.lorem.sentence(),
+                    text: getIngredientName(),
                   },
                   {
-                    name: getIngredientName(),
-                    note: faker.lorem.sentence(),
+                    text: getIngredientName(),
                   },
                 ],
               },
@@ -267,11 +248,13 @@ async function main() {
             {
               name: getRecipeName(),
               overview: faker.lorem.paragraph(),
-              servingSize: "faker.datatype.number()",
-              isPublished: 1,
+              servingSize: 2,
+              status: 'PUBLISHED',
               recipeImages: {
                 create: {
-                  imageUrl: faker.image.urlLoremFlickr({ category: "food" }),
+                  imageUrl: faker.image.urlLoremFlickr({
+                    category: "food",
+                  }),
                 },
               },
               recipeSteps: {
@@ -279,37 +262,30 @@ async function main() {
                   {
                     step: 1,
                     description: faker.lorem.paragraph(),
-                    note: faker.lorem.sentence(),
                   },
                   {
                     step: 2,
                     description: faker.lorem.paragraph(),
-                    note: faker.lorem.sentence(),
                   },
                   {
                     step: 3,
                     description: faker.lorem.paragraph(),
-                    note: faker.lorem.sentence(),
                   },
                 ],
               },
-              ingredients: {
+              recipeIngredients: {
                 create: [
                   {
-                    name: getIngredientName(),
-                    note: faker.lorem.sentence(),
+                    text: getIngredientName(),
                   },
                   {
-                    name: getIngredientName(),
-                    note: faker.lorem.sentence(),
+                    text: getIngredientName(),
                   },
                   {
-                    name: getIngredientName(),
-                    note: faker.lorem.sentence(),
+                    text: getIngredientName(),
                   },
                   {
-                    name: getIngredientName(),
-                    note: faker.lorem.sentence(),
+                    text: getIngredientName(),
                   },
                 ],
               },
@@ -333,11 +309,6 @@ async function main() {
       id: true,
     },
   });
-  // const recipeIds = await prisma.recipe.findMany({
-  //   select: {
-  //     id: true,
-  //   },
-  // });
 
   const followData = [];
   const likesData = [];
