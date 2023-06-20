@@ -1,20 +1,21 @@
-FROM node:18
+ARG NODE_VERSION=18.12.1
+
+FROM node:${NODE_VERSION}-alpine
 
 # Create app directory
-WORKDIR /usr/src/app
+WORKDIR /app
 
-# Install app dependencies
-# A wildcard is used to ensure both package.json AND package-lock.json are copied
-# where available (npm@5+)
-COPY package*.json ./
+# Copy package.json and package-lock.json to Docker container
+COPY package*.json /app
 
+# Install node_modules in docker conrainer
 RUN npm install
-# If you are building your code for production
-# RUN npm ci --omit=dev
 
-# Bundle app source
+# Copy all folders and files
 COPY . .
 
-EXPOSE 8080
+# Expose the port that the application listens on.
+EXPOSE 3000
 
-CMD npm run start
+# Run the application
+CMD npm run dev

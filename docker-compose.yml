@@ -1,15 +1,39 @@
+# Set the version of docker compose to use
+version: '3.9'
+
+# The containers that compose the project
 services:
-  postgres:
-    image: postgres:13
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: '11-recipe-api'
+    ports:
+      - 3000:3000
+    volumes:
+      - .:/app
+    env_file:
+      - .env
+    environment:
+      - NODE_ENV=development
+      - DATABASE_URL=postgresql://${DB_USER}:${DB_PASSWORD}@db:${DB_PORT}/${DB_NAME}
+    depends_on:
+      - db
+    links:
+      - db
+
+  db:
+    image: postgres:latest
     container_name: 11-recipe-db
+    ports:
+      - '5433:5432'
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=password
       - POSTGRES_DB=recipeapp
-    ports:
-      - 5433:5432
     volumes:
       - postgres_data:/var/lib/postgresql/data/
 
+# Use docker volume for straging DB
 volumes:
   postgres_data:
