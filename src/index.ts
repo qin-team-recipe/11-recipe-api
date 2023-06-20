@@ -4,7 +4,7 @@ import swaggerUi from "swagger-ui-express";
 
 const app = express();
 
-const port = 8080;
+const port = 3000;
 
 // Swagger options
 const swaggerOptions = {

@@ -16,15 +16,35 @@ enum Role {
   CHEF
 }
 
+enum SiteType {
+  TWITTER
+  INSTAGRAM
+  FACEBOOK
+  YOUTUBE
+  TIKTOK
+  BLOG
+  OTHER
+}
+
+// 作成中、下書き、公開、非公開
+enum RecipeStatus {
+  CREATING
+  DRAFT
+  PUBLISHED
+  UNPUBLISHED
+}
+
 model User {
-  id        String   @id @default(uuid())
-  name      String   @db.VarChar(255)
-  email     String   @unique @db.VarChar(255)
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
-  chef      Chef?
-  follows   Follow[]
-  likes     Like[]
+  id            String         @id @default(uuid())
+  name          String         @db.VarChar(255)
+  email         String         @unique @db.VarChar(255)
+  createdAt     DateTime       @default(now()) @map("created_at")
+  updatedAt     DateTime       @updatedAt @map("updated_at")
+  chef          Chef?
+  follows       Follow[]
+  likes         Like[]
+  shoppingLists ShoppingList[]
+  shoppingMemos ShoppingMemo[]
 
   @@map("users")
 }
@@ -41,24 +61,26 @@ model Chef {
   updatedAt DateTime @updatedAt @map("updated_at")
   links     Link[]
   follows   Follow[]
+  recipes   Recipe[]
 
   @@map("chefs")
 }
 
 model Follow {
-  chef        Chef     @relation(fields: [followerId], references: [id])
-  followerId  String   @map("follower_id")
-  user        User     @relation(fields: [followingId], references: [id])
-  followingId String   @map("following_id")
-  createdAt   DateTime @default(now()) @map("created_at")
-  updatedAt   DateTime @updatedAt @map("updated_at")
+  chef      Chef     @relation(fields: [chefId], references: [id])
+  chefId    String   @map("chef_id")
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String   @map("user_id")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
-  @@id([followerId, followingId])
+  @@id([chefId, userId])
   @@map("follows")
 }
 
 model Link {
   id          String   @id @default(uuid())
+  siteType    SiteType @map("site_type")
   chef        Chef     @relation(fields: [chefId], references: [id])
   chefId      String   @map("chef_id")
   siteName    String   @map("site_name") @db.VarChar(255)
@@ -71,18 +93,21 @@ model Link {
 }
 
 model Recipe {
-  id            String         @id @default(uuid())
-  name          String         @db.VarChar(255)
-  overview      String?
-  servingSize   String         @map("serving_size") @db.VarChar(255)
-  isPublished   Int            @map("is_published") @db.SmallInt
-  createdAt     DateTime       @default(now()) @map("created_at")
-  updatedAt     DateTime       @updatedAt @map("updated_at")
-  likes         Like[]
-  recipeImages  RecipeImage[]
-  recipeSteps   RecipeStep[]
-  ingredients   Ingredient[]
-  shoppingLists ShoppingList[]
+  id                String             @id @default(uuid())
+  chef              Chef               @relation(fields: [chefId], references: [id])
+  chefId            String             @map("chef_id")
+  name              String?            @db.VarChar(255)
+  overview          String?
+  servingSize       Int                @map("serving_size") @db.SmallInt
+  status            RecipeStatus       @default(CREATING)
+  createdAt         DateTime           @default(now()) @map("created_at")
+  updatedAt         DateTime           @updatedAt @map("updated_at")
+  likes             Like[]
+  recipeImages      RecipeImage[]
+  recipeSteps       RecipeStep[]
+  recipeIngredients RecipeIngredient[]
+  shoppingLists     ShoppingList[]
+  recipeLinks       RecipeLink[]
 
   @@map("recipes")
 }
@@ -116,27 +141,38 @@ model RecipeStep {
   recipeId    String   @map("recipe_id")
   step        Int      @db.SmallInt
   description String
-  note        String?
   createdAt   DateTime @default(now()) @map("created_at")
   updatedAt   DateTime @updatedAt @map("updated_at")
 
   @@map("recipe_steps")
 }
 
-model Ingredient {
+model RecipeLink {
   id        String   @id @default(uuid())
   recipe    Recipe   @relation(fields: [recipeId], references: [id])
   recipeId  String   @map("recipe_id")
-  name      String   @db.VarChar(255)
-  note      String?
+  url       String   @db.VarChar(255)
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  @@map("ingredients")
+  @@map("recipe_links")
+}
+
+model RecipeIngredient {
+  id        String   @id @default(uuid())
+  recipe    Recipe   @relation(fields: [recipeId], references: [id])
+  recipeId  String   @map("recipe_id")
+  text      String   @db.VarChar(255)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("recipe_ingredients")
 }
 
 model ShoppingList {
   id                      String                   @id @default(uuid())
+  user                    User                     @relation(fields: [userId], references: [id])
+  userId                  String                   @map("user_id")
   recipe                  Recipe                   @relation(fields: [recipeId], references: [id])
   recipeId                String                   @map("recipe_id")
   sortOrder               Int                      @map("sort_order") @db.SmallInt
@@ -152,10 +188,21 @@ model ShoppingListIngredient {
   shoppingList   ShoppingList @relation(fields: [shoppingListId], references: [id])
   shoppingListId String       @map("shopping_list_id")
   name           String       @db.VarChar(255)
-  note           String?
   isBought       Boolean      @default(false) @map("is_bought")
   createdAt      DateTime     @default(now()) @map("created_at")
   updatedAt      DateTime     @updatedAt @map("updated_at")
 
   @@map("shopping_list_ingredients")
+}
+
+model ShoppingMemo {
+  id        String   @id @default(uuid())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String   @map("user_id")
+  text      String   @db.VarChar(255)
+  isBought  Boolean  @default(false) @map("is_bought")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("shopping_memos")
 }

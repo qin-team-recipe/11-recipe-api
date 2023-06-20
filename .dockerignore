@@ -6,7 +6,7 @@
 
 **/.classpath
 **/.dockerignore
-**/.env
+**/.env*
 **/.git
 **/.gitignore
 **/.project
@@ -30,5 +30,6 @@
 **/values.dev.yaml
 **/build
 **/dist
+database_schema.md
 LICENSE
 README.md
