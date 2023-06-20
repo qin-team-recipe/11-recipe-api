@@ -1,169 +1,342 @@
 import { PrismaClient } from "@prisma/client";
+import { faker } from "@faker-js/faker";
 
 const prisma = new PrismaClient();
 
-// TODO: fix error
 async function main() {
-  const alice = await prisma.user.create({
-    data: {
-      email: "alice@prisma.io",
-      name: "Alice",
+  // create dummy data
+  // create chef role: USER
+  for (let index = 0; index < 1000; index++) {
+    let name = faker.internet.userName();
+    await prisma.user.create({
+      data: {
+        email: faker.internet.email(),
+        name: name,
+        chef: {
+          create: {
+            role: "USER",
+            name: name,
+            profile: faker.lorem.paragraph(),
+            imageUrl: faker.image.avatar(),
+            recipes: {
+              create: [
+                {
+                  name: getRecipeName(),
+                  overview: faker.lorem.paragraph(),
+                  servingSize: 2,
+                  status: 'PUBLISHED',
+                  recipeImages: {
+                    create: {
+                      imageUrl: faker.image.urlLoremFlickr({
+                        category: "food",
+                      }),
+                    },
+                  },
+                  recipeSteps: {
+                    create: [
+                      {
+                        step: 1,
+                        description: faker.lorem.paragraph(),
+                      },
+                      {
+                        step: 2,
+                        description: faker.lorem.paragraph(),
+                      },
+                      {
+                        step: 3,
+                        description: faker.lorem.paragraph(),
+                      },
+                    ],
+                  },
+                  recipeIngredients: {
+                    create: [
+                      {
+                        text: getIngredientName(),
+                      },
+                      {
+                        text: getIngredientName(),
+                      },
+                      {
+                        text: getIngredientName(),
+                      },
+                      {
+                        text: getIngredientName(),
+                      },
+                    ],
+                  },
+                },
+                {
+                  name: getRecipeName(),
+                  overview: faker.lorem.paragraph(),
+                  servingSize: 2,
+                  status: 'PUBLISHED',
+                  recipeImages: {
+                    create: {
+                      imageUrl: faker.image.urlLoremFlickr({
+                        category: "food",
+                      }),
+                    },
+                  },
+                  recipeSteps: {
+                    create: [
+                      {
+                        step: 1,
+                        description: faker.lorem.paragraph(),
+                      },
+                      {
+                        step: 2,
+                        description: faker.lorem.paragraph(),
+                      },
+                      {
+                        step: 3,
+                        description: faker.lorem.paragraph(),
+                      },
+                    ],
+                  },
+                  recipeIngredients: {
+                    create: [
+                      {
+                        text: getIngredientName(),
+                      },
+                      {
+                        text: getIngredientName(),
+                      },
+                      {
+                        text: getIngredientName(),
+                      },
+                      {
+                        text: getIngredientName(),
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+        },
+        shoppingMemos: {
+          create: [
+            {
+              text: getIngredientName(),
+            },
+          ],
+        },
+      },
+    });
+  }
+
+  const recipeIds = await prisma.recipe.findMany({
+    select: {
+      id: true,
     },
   });
 
-  const bob = await prisma.user.create({
-    data: {
-      email: "bob@prisma.io",
-      name: "Bob",
+  const randomRecipeId1 =
+    recipeIds[Math.floor(Math.random() * recipeIds.length)].id;
+
+  const createListsForUsers = async () => {
+    // 1. `user`テーブルからユーザーを取得
+    const users = await prisma.user.findMany();
+
+    // 2. ユーザーごとに`lists`データを作成
+    for (const user of users) {
+      const userId = user.id;
+
+      // `lists`データを作成
+      const createdLists = await prisma.shoppingList.create({
+        data: {
+          userId: userId,
+          recipeId: randomRecipeId1,
+          sortOrder: 1,
+          shoppingListIngredients: {
+            create: [
+              {
+                name: "野菜",
+              },
+              {
+                name: "野菜",
+              },
+              {
+                name: "野菜",
+              },
+            ],
+          },
+        },
+      });
+    }
+  };
+
+  createListsForUsers();
+
+  // create chef role: CHEF
+  for (let index = 0; index < 30; index++) {
+    let name = faker.internet.userName();
+    await prisma.chef.create({
+      data: {
+        role: "CHEF",
+        name: name,
+        profile: faker.lorem.paragraph(),
+        imageUrl: faker.image.avatar(),
+        links: {
+          create: [
+            {
+              siteType: "TWITTER",
+              siteName: "Twitter",
+              url: faker.internet.url(),
+              accountName: "@" + faker.internet.userName(),
+            },
+            {
+              siteType: "INSTAGRAM",
+              siteName: "instagram",
+              url: faker.internet.url(),
+              accountName: "@" + faker.internet.userName(),
+            },
+            {
+              siteType: "OTHER",
+              siteName: "サイト名",
+              url: faker.internet.url(),
+            },
+          ],
+        },
+        recipes: {
+          create: [
+            {
+              name: getRecipeName(),
+              overview: faker.lorem.paragraph(),
+              servingSize: 2,
+              status: 'PUBLISHED',
+              recipeImages: {
+                create: {
+                  imageUrl: faker.image.urlLoremFlickr({
+                    category: "food",
+                  }),
+                },
+              },
+              recipeSteps: {
+                create: [
+                  {
+                    step: 1,
+                    description: faker.lorem.paragraph(),
+                  },
+                  {
+                    step: 2,
+                    description: faker.lorem.paragraph(),
+                  },
+                  {
+                    step: 3,
+                    description: faker.lorem.paragraph(),
+                  },
+                ],
+              },
+              recipeIngredients: {
+                create: [
+                  {
+                    text: getIngredientName(),
+                  },
+                  {
+                    text: getIngredientName(),
+                  },
+                  {
+                    text: getIngredientName(),
+                  },
+                  {
+                    text: getIngredientName(),
+                  },
+                ],
+              },
+            },
+            {
+              name: getRecipeName(),
+              overview: faker.lorem.paragraph(),
+              servingSize: 2,
+              status: 'PUBLISHED',
+              recipeImages: {
+                create: {
+                  imageUrl: faker.image.urlLoremFlickr({
+                    category: "food",
+                  }),
+                },
+              },
+              recipeSteps: {
+                create: [
+                  {
+                    step: 1,
+                    description: faker.lorem.paragraph(),
+                  },
+                  {
+                    step: 2,
+                    description: faker.lorem.paragraph(),
+                  },
+                  {
+                    step: 3,
+                    description: faker.lorem.paragraph(),
+                  },
+                ],
+              },
+              recipeIngredients: {
+                create: [
+                  {
+                    text: getIngredientName(),
+                  },
+                  {
+                    text: getIngredientName(),
+                  },
+                  {
+                    text: getIngredientName(),
+                  },
+                  {
+                    text: getIngredientName(),
+                  },
+                ],
+              },
+            },
+          ],
+        },
+      },
+    });
+  }
+
+  const chefIds = await prisma.chef.findMany({
+    where: {
+      role: "CHEF",
+    },
+    select: {
+      id: true,
+    },
+  });
+  const userIds = await prisma.user.findMany({
+    select: {
+      id: true,
     },
   });
 
-  const chefAlice = await prisma.chef.create({
-    data: {
-      user_id: alice.id,
-      role: 1,
-      name: "Alice Chef",
-      profile: "Chef Alice's profile",
-      image_url: "https://example.com/alice.jpg",
-    },
+  const followData = [];
+  const likesData = [];
+  for (let i = 0; i < 200; i++) {
+    const randomUserId = userIds[Math.floor(Math.random() * userIds.length)].id;
+    const randomChefId = chefIds[Math.floor(Math.random() * chefIds.length)].id;
+    const randomRecipeId2 =
+      recipeIds[Math.floor(Math.random() * recipeIds.length)].id;
+
+    followData.push({
+      userId: randomUserId,
+      chefId: randomChefId,
+    });
+
+    likesData.push({
+      userId: randomUserId,
+      recipeId: randomRecipeId2,
+    });
+  }
+
+  await prisma.follow.createMany({
+    data: followData,
+    skipDuplicates: true,
   });
 
-  const follow1 = await prisma.follow.create({
-    data: {
-      following_user_id: alice.id,
-      follower_user_id: bob.id,
-    },
-  });
-
-  const follow2 = await prisma.follow.create({
-    data: {
-      following_user_id: bob.id,
-      follower_user_id: alice.id,
-    },
-  });
-
-  const link1 = await prisma.link.create({
-    data: {
-      site_name: "Example Site 1",
-      url: "https://example.com/site1",
-      account_name: "site1_user",
-    },
-  });
-
-  const link2 = await prisma.link.create({
-    data: {
-      site_name: "Example Site 2",
-      url: "https://example.com/site2",
-      account_name: "site2_user",
-    },
-  });
-
-  const recipe1 = await prisma.recipe.create({
-    data: {
-      name: "Recipe 1",
-      overview: "Recipe 1 overview",
-      serving_size: 4,
-      is_published: 1,
-    },
-  });
-
-  const recipe2 = await prisma.recipe.create({
-    data: {
-      name: "Recipe 2",
-      overview: "Recipe 2 overview",
-      serving_size: 2,
-      is_published: 1,
-    },
-  });
-
-  const like1 = await prisma.like.create({
-    data: {
-      user_id: bob.id,
-      recipe_id: recipe1.id,
-    },
-  });
-
-  const like2 = await prisma.like.create({
-    data: {
-      user_id: bob.id,
-      recipe_id: recipe2.id,
-    },
-  });
-
-  const recipeImage1 = await prisma.recipeImage.create({
-    data: {
-      recipe_id: recipe1.id,
-      image_url: "https://example.com/recipe1.jpg",
-    },
-  });
-
-  const recipeImage2 = await prisma.recipeImage.create({
-    data: {
-      recipe_id: recipe2.id,
-      image_url: "https://example.com/recipe2.jpg",
-    },
-  });
-
-  const recipeStep1 = await prisma.recipeStep.create({
-    data: {
-      recipe_id: recipe1.id,
-      description: "Step 1 description",
-      note: "Step 1 note",
-    },
-  });
-
-  const recipeStep2 = await prisma.recipeStep.create({
-    data: {
-      recipe_id: recipe2.id,
-      description: "Step 2 description",
-      note: "Step 2 note",
-    },
-  });
-
-  const ingredient1 = await prisma.ingredient.create({
-    data: {
-      name: "Ingredient 1",
-      note: "Ingredient 1 note",
-    },
-  });
-
-  const ingredient2 = await prisma.ingredient.create({
-    data: {
-      name: "Ingredient 2",
-      note: "Ingredient 2 note",
-    },
-  });
-
-  const shoppingList1 = await prisma.shoppingList.create({
-    data: {
-      recipe_name: "Shopping List 1",
-      sort_order: 1,
-    },
-  });
-
-  const shoppingList2 = await prisma.shoppingList.create({
-    data: {
-      recipe_name: "Shopping List 2",
-      sort_order: 2,
-    },
-  });
-
-  const shoppingListIngredient1 = await prisma.shoppingListIngredient.create({
-    data: {
-      shopping_list_id: shoppingList1.id,
-      name: "Ingredient 1",
-      note: "Ingredient 1 note",
-      is_bought: false,
-    },
-  });
-
-  const shoppingListIngredient2 = await prisma.shoppingListIngredient.create({
-    data: {
-      shopping_list_id: shoppingList2.id,
-      name: "Ingredient 2",
-      note: "Ingredient 2 note",
-      is_bought: true,
-    },
+  await prisma.like.createMany({
+    data: likesData,
+    skipDuplicates: true,
   });
 
   console.log("Dummy data created successfully.");
@@ -176,3 +349,110 @@ main()
   .finally(async () => {
     await prisma.$disconnect();
   });
+
+function getIngredientName() {
+  // 食材の材料の配列
+  const array = [
+    "牛肉",
+    "豚肉",
+    "鶏肉",
+    "魚",
+    "卵",
+    "牛乳",
+    "豆腐",
+    "大豆",
+    "小麦",
+    "米",
+    "パン",
+    "麺",
+    "野菜",
+    "果物",
+    "きのこ",
+    "海藻",
+    "海老",
+    "カニ",
+    "貝",
+    "イカ",
+    "タコ",
+    "エビ",
+    "カニ",
+    "貝",
+    "イカ",
+    "タコ",
+    "エビ",
+    "チーズ",
+    "バター",
+    "マヨネーズ",
+    "ケチャップ",
+    "ソース",
+    "塩",
+    "砂糖",
+    "醤油",
+    "味噌",
+    "酢",
+    "酒",
+    "みりん",
+    "酢",
+    "酒",
+    "みりん",
+    "コショウ",
+    "ガーリック",
+    "オリーブオイル",
+    "サラダ油",
+    "ごま油",
+  ];
+  // 配列の要素数を取得
+  const length = array.length;
+
+  // ランダムなインデックスを生成
+  const randomIndex = Math.floor(Math.random() * length);
+
+  // ランダムな要素を返す
+  return array[randomIndex];
+}
+
+function getRecipeName() {
+  // 料理名の配列
+  const array = [
+    "カレー",
+    "ハンバーグ",
+    "オムライス",
+    "親子丼",
+    "カツ丼",
+    "天丼",
+    "牛丼",
+    "麻婆豆腐",
+    "餃子",
+    "焼きそば",
+    "ラーメン",
+    "チャーハン",
+    "ピザ",
+    "パスタ",
+    "ハンバーガー",
+    "サンドイッチ",
+    "ステーキ",
+    "寿司",
+    "刺身",
+    "天ぷら",
+    "唐揚げ",
+    "鍋",
+    "お好み焼き",
+    "たこ焼き",
+    "焼き鳥",
+    "串カツ",
+    "おでん",
+    "おにぎり",
+    "お茶漬け",
+    "お寿司",
+    "お刺身",
+    "お天ぷら",
+  ];
+  // 配列の要素数を取得
+  const length = array.length;
+
+  // ランダムなインデックスを生成
+  const randomIndex = Math.floor(Math.random() * length);
+
+  // ランダムな要素を返す
+  return array[randomIndex];
+}
