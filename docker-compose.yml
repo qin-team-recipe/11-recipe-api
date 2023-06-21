@@ -1,5 +1,5 @@
 # Set the version of docker compose to use
-version: '3.9'
+version: "3.9"
 
 # The containers that compose the project
 services:
@@ -7,9 +7,9 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: '11-recipe-api'
+    container_name: "11-recipe-api"
     ports:
-      - 3000:3000
+      - 8080:8080
     volumes:
       - .:/app
     env_file:
@@ -26,7 +26,7 @@ services:
     image: postgres:latest
     container_name: 11-recipe-db
     ports:
-      - '5433:5432'
+      - "5433:5432"
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=password
