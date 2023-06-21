@@ -1,10 +1,13 @@
 import express, { Request, Response } from "express";
 import swaggerJsdoc from "swagger-jsdoc";
 import swaggerUi from "swagger-ui-express";
+import routes from "./routes/routes";
 
 const app = express();
 
-const port = 3000;
+const port = 8080;
+
+app.use(routes);
 
 // Swagger options
 const swaggerOptions = {
