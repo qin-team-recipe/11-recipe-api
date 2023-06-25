@@ -31,7 +31,7 @@ const swaggerOptions = {
       },
     ],
   },
-  apis: ["./src/index.ts"], // Path to your API route files
+  apis: ["./src/routes/*.ts"], // Path to your API route files
 };
 
 // Initialize swagger-jsdoc
@@ -42,21 +42,6 @@ app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
 app.get("/", (req: Request, res: Response) => {
   res.send("Hello World!");
-});
-
-// Sample route
-app.get("/api/sample", (req, res) => {
-  /**
-   * @swagger
-   * /api/sample:
-   *   get:
-   *     summary: Get a sample resource
-   *     description: Returns a sample resource
-   *     responses:
-   *       200:
-   *         description: Successful response
-   */
-  res.json({ message: "Sample resource" });
 });
 
 app.listen(port, () => {
