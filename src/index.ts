@@ -2,18 +2,11 @@ import express, { Request, Response } from "express";
 import swaggerJsdoc from "swagger-jsdoc";
 import swaggerUi from "swagger-ui-express";
 import routes from "./routes/routes";
-import bodyParser from "body-parser";
 
 const app = express();
-
 const port = 8080;
 
-app.use(
-  bodyParser.urlencoded({
-    extended: true,
-  })
-);
-app.use(bodyParser.json());
+app.use(express.json());
 app.use(routes);
 
 // Swagger options
