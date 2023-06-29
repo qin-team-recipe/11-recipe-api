@@ -74,6 +74,12 @@ export const createChef: Handler = async (
     } = req.body;
 
     if (!name || !role) {
+      if (role === "USER" && !userId) {
+        res
+          .status(400)
+          .json({ message: "Name, and role and userId are required" });
+        return;
+      }
       res.status(400).json({ message: "Name, and role are required" });
       return;
     }
@@ -152,20 +158,16 @@ export const updateChef: Handler = async (
   try {
     const {
       name,
-      role,
-      userId,
       profile,
       imageUrl,
     }: {
       name: string;
-      role: "USER" | "CHEF";
-      userId: string | null;
       profile: string | null;
       imageUrl: string | null;
     } = req.body;
 
-    if (!name || !role) {
-      res.status(400).json({ message: "Name, and role are required" });
+    if (!name) {
+      res.status(400).json({ message: "Name is required" });
       return;
     }
 
@@ -175,8 +177,6 @@ export const updateChef: Handler = async (
       },
       data: {
         name: name,
-        role: role,
-        userId: userId,
         profile: profile,
         imageUrl: imageUrl,
       },

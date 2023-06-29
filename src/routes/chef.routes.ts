@@ -131,7 +131,7 @@ router.get("/chefs/:id", getChefById);
  *           schema:
  *             $ref: '#/components/schemas/chef'
  *       400:
- *         description: Name, and role are required
+ *         description: Name, is required
  *       404:
  *         description: Chefs not found
  *       500:
