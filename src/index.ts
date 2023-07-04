@@ -14,9 +14,9 @@ const swaggerOptions = {
   definition: {
     openapi: "3.0.0",
     info: {
-      title: "Sample API",
+      title: "Recipe APP API",
       version: "1.0.0",
-      description: "A sample API documentation",
+      description: "Recipe App API documentation",
     },
     servers: [
       {
