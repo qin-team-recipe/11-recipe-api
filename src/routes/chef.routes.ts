@@ -5,6 +5,7 @@ import {
   getChefById,
   updateChef,
   deleteChef,
+  getChefLinks,
 } from "../controllers/chef.controller";
 
 export const router = Router();
@@ -165,3 +166,37 @@ router.put("/chefs/:id", updateChef);
  *         description: Internal server error
  */
 router.delete("/chefs/:id", deleteChef);
+
+/**
+ * @swagger
+ * /chefs/{chefId}/links:
+ *   get:
+ *     summary: Return a chef links
+ *     tags:
+ *       - chef
+ *     description: Get a chef links
+ *     operationId: getChefLinks
+ *     parameters:
+ *       - name: chef_id
+ *         in: path
+ *         description: chef id(uuid)
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *        200:
+ *          description: the list of chef links
+ *          content:
+ *            application/json:
+ *              schema:
+ *                type: array
+ *                items:
+ *                  $ref: '#/components/schemas/link'
+ *        400:
+ *          description: chefId is required
+ *        404:
+ *          description: chef links not found
+ *        500:
+ *          description: Internal server error
+ */
+router.get("/chefs/:chefId/links", getChefLinks);
