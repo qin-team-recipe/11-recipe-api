@@ -177,15 +177,15 @@ router.delete("/chefs/:id", deleteChef);
  *     description: Get a chef links
  *     operationId: getChefLinks
  *     parameters:
- *       - name: chef_id
+ *       - name: chefId
  *         in: path
- *         description: chef id(uuid)
+ *         description: chef id (uuid)
  *         required: true
  *         schema:
  *           type: string
  *     responses:
  *        200:
- *          description: the list of chef links
+ *          description: The list of chef links.
  *          content:
  *            application/json:
  *              schema:
@@ -193,10 +193,10 @@ router.delete("/chefs/:id", deleteChef);
  *                items:
  *                  $ref: '#/components/schemas/link'
  *        400:
- *          description: chefId is required
+ *          description: chefId is required.
  *        404:
- *          description: chef links not found
+ *          description: Chef Link not found.
  *        500:
- *          description: Internal server error
+ *          description: Internal server error.
  */
 router.get("/chefs/:chefId/links", getChefLinks);

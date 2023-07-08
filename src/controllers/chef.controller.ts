@@ -227,28 +227,23 @@ export const deleteChef: Handler = async (
  * @route {GET} /chefs/:chefId/links
  * @param req
  * @param res
- * @param next
  * @returns chef links
  */
-export const getChefLinks: Handler = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+export const getChefLinks: Handler = async (req: Request, res: Response) => {
   try {
     const links = await prisma.link.findMany({
       where: {
         chefId: String(req.params.chefId),
       },
     });
-
     if (links.length === 0) {
-      res.status(404).json({ message: "Links not found" });
+      res.status(404).json({ message: "Chef Links not found" });
     } else {
       res.json(links);
     }
   } catch (error) {
-    next(error);
+    console.error(error);
+    return res.status(500).json({ message: "Something went wrong" });
   }
 };
 
