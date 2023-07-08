@@ -19,7 +19,11 @@ type CreateRecipeBody = {
  */
 export const getRecipes: Handler = async (req: Request, res: Response) => {
   try {
-    const recipes = await prisma.recipe.findMany();
+    const recipes = await prisma.recipe.findMany({
+      include: {
+        likes: true,
+      },
+    });
     return res.json(recipes);
   } catch (error) {
     console.error(error);
@@ -40,6 +44,13 @@ export const getRecipe: Handler = async (req: Request, res: Response) => {
     }
     const recipe = await prisma.recipe.findUnique({
       where: { id },
+      include: {
+        likes: true,
+        recipeImages: true,
+        recipeSteps: true,
+        recipeIngredients: true,
+        recipeLinks: true,
+      },
     });
     if (recipe) {
       return res.json(recipe);
