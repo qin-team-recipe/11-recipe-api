@@ -6,6 +6,7 @@ import {
   updateChef,
   deleteChef,
   getChefLinks,
+  createChefLink,
 } from "../controllers/chef.controller";
 
 export const router = Router();
@@ -200,3 +201,59 @@ router.delete("/chefs/:id", deleteChef);
  *          description: Internal server error.
  */
 router.get("/chefs/:chefId/links", getChefLinks);
+
+/**
+ * @swagger
+ * /chefs/{chefId}/links:
+ *   post:
+ *     summary: Create a new chef link
+ *     tags:
+ *       - chef
+ *     description: Create a new chef link
+ *     operationId: createChefLink
+ *     parameters:
+ *       - name: chefId
+ *         in: path
+ *         description: chef id (uuid)
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       description: Chef link object that needs to be added to the store
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/link'
+ *     responses:
+ *       200:
+ *         description: Created chef link
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/link'
+ *       400:
+ *         description: Bad request.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               oneOf:
+ *                 - $ref: '#/components/schemas/ErrorChefIdRequired'
+ *                 - $ref: '#/components/schemas/ErrorFieldMissing'
+ *             examples:
+ *               ErrorChefIdRequired:
+ *                 value:
+ *                   status: 400
+ *                   message: chefId is required.
+ *               ErrorFieldMissing:
+ *                 value:
+ *                   status: 400
+ *                   message: Required field is missing.
+ *       404:
+ *         description: Chef not found.
+ *       409:
+ *         description: Link with the same siteType already exists.
+ *       500:
+ *         description: Internal server error.
+ */
+router.post("/chefs/:chefId/links", createChefLink);

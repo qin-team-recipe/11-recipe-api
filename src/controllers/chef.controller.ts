@@ -1,7 +1,15 @@
 import { Handler, NextFunction, Request, Response, Router } from "express";
-import { prisma, Chef } from "../../prisma/prisma-client";
+import { prisma, Chef, Link } from "../../prisma/prisma-client";
 
 const router = Router();
+
+type ChefLinkBody = {
+  siteType: Link["siteType"];
+  chefId: Chef["id"];
+  siteName: Link["siteName"];
+  url: Link["url"];
+  accountName?: Link["accountName"];
+};
 
 /**
  * Get chefs
@@ -248,3 +256,58 @@ export const getChefLinks: Handler = async (req: Request, res: Response) => {
 };
 
 export default router;
+
+/**
+ * Create chef link
+ * @route {POST} /chefs/:chefId/links
+ * @param req
+ * @param res
+ * @returns { message: "Link created" }
+ */
+
+export const createChefLink: Handler = async (req: Request, res: Response) => {
+  try {
+    const { chefId } = req.params;
+    if (!chefId) {
+      res.status(400).json({ message: "ChefId is required" });
+      return;
+    }
+    const chef = await prisma.chef.findUnique({
+      where: {
+        id: String(chefId),
+      },
+    });
+    if (!chef) {
+      res.status(404).json({ message: "Chef not found" });
+      return;
+    }
+    const { siteType, siteName, url, accountName } : ChefLinkBody = req.body;
+    if (!siteType || !siteName || !url ) {
+      res.status(400).json({ message: "Required field is missing" });
+      return;
+    }
+    const existingLink = await prisma.link.findFirst({
+      where: {
+        siteType: siteType,
+        chefId: String(chefId),
+      },
+    })
+    if (existingLink) {
+      res.status(409).json({ message: "Chef Link with the same siteType already exists" });
+      return;
+    }
+    await prisma.link.create({
+      data: {
+        siteType: siteType,
+        siteName: siteName,
+        url: url,
+        accountName: accountName,
+        chefId: chefId,
+      },
+    });
+    res.json({ message: "Chef Link created" });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Something went wrong" });
+  }
+}
