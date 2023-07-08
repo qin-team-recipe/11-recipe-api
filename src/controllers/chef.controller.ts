@@ -343,3 +343,62 @@ export const getChefLink : Handler = async (req: Request, res: Response) => {
     return res.status(500).json({ message: "Something went wrong" });
   }
 }
+
+/**
+ * Update chef link
+ * @route {PUT} /chefs/:chefId/links/:id
+ * @param req
+ * @param res
+ * @returns chef link
+*/
+
+export const updateChefLink : Handler = async (req: Request, res: Response) => {
+  try {
+    const { id, chefId } = req.params;
+    if (!id || !chefId) {
+      res.status(400).json({ message: "ChefId and Id is required" });
+      return;
+    }
+    const link = await prisma.link.findFirst({
+      where: {
+        id: String(id),
+        chefId: String(chefId),
+      }
+    });
+    if (!link) {
+      res.status(404).json({ message: "Chef Link not found" });
+      return;
+    }
+    const { siteType = link.siteType, siteName = link.siteName, url = link.url, accountName } : ChefLinkBody = req.body;
+    if (!siteType || !siteName || !url ) {
+      res.status(400).json({ message: "Required field is missing" });
+      return;
+    }
+    const existingLink = await prisma.link.findFirst({
+      where: {
+        chefId: link.chefId, // 同じ chefId を持つ他の Link を検索
+        siteType: siteType, // 更新しようとしている siteType と一致するものを検索
+      },
+    });
+     // 更新しようとしているリンクのsiteType以外に同じstyeTypeのLinkが存在している場合はエラー
+    if (existingLink && link.siteType !== siteType) {
+      res.status(409).json({ message: "Chef Link with the same siteType already exists" });
+      return;
+    }
+    await prisma.link.update({
+      where: {
+        id: String(id),
+      },
+      data: {
+        siteType: siteType,
+        siteName: siteName,
+        url: url,
+        accountName: accountName,
+      }
+    })
+    res.json({ message: "Chef Link updated" });
+  } catch(error) {
+    console.error(error);
+    return res.status(500).json({ message: "Something went wrong" });
+  }
+}

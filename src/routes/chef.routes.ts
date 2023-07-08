@@ -8,6 +8,7 @@ import {
   getChefLinks,
   createChefLink,
   getChefLink,
+  updateChefLink,
 } from "../controllers/chef.controller";
 
 export const router = Router();
@@ -296,3 +297,64 @@ router.post("/chefs/:chefId/links", createChefLink);
  *          description: Internal server error.
  */
 router.get("/chefs/:chefId/links/:id", getChefLink);
+
+/**
+ * @swagger
+ * /chefs/{chefId}/links/{id}:
+ *   put:
+ *     summary: Update a chef link
+ *     tags:
+ *       - chef
+ *     description: Update a chef link
+ *     operationId: updateChefLink
+ *     parameters:
+ *       - name: chefId
+ *         in: path
+ *         description: chef id (uuid)
+ *         required: true
+ *         schema:
+ *           type: string
+ *       - name: id
+ *         in: path
+ *         description: link id (uuid)
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/link'
+ *     responses:
+ *       200:
+ *         description: Updated chef link.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/link'
+ *       400:
+ *         description: Bad request.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               oneOf:
+ *                 - $ref: '#/components/schemas/ErrorIdRequired'
+ *                 - $ref: '#/components/schemas/ErrorFieldMissing'
+ *             examples:
+ *               ErrorIdRequired:
+ *                 value:
+ *                   status: 400
+ *                   message: chefId and Id is required.
+ *               ErrorFieldMissing:
+ *                 value:
+ *                   status: 400
+ *                   message: Required field is missing.
+ *       404:
+ *         description: Chef link not found.
+ *       409:
+ *         description: Link with the same siteType already exists.
+ *       500:
+ *         description: Internal server error.
+ */
+router.put("/chefs/:chefId/links/:id", updateChefLink);
