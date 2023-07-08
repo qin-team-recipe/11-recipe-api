@@ -402,3 +402,40 @@ export const updateChefLink : Handler = async (req: Request, res: Response) => {
     return res.status(500).json({ message: "Something went wrong" });
   }
 }
+
+/**
+ * Delete chef link
+ * @route {DELETE} /chefs/:chefId/links/:id
+ * @param req
+ * @param res
+ * @returns { message: "Chef Link deleted" }
+*/
+
+export const deleteChefLink : Handler = async (req: Request, res: Response) => {
+  try {
+    const { id, chefId } = req.params;
+    if (!id || !chefId) {
+      res.status(400).json({ message: "ChefId and Id is required" });
+      return;
+    }
+    const link = await prisma.link.findFirst({
+      where: {
+        id: String(id),
+        chefId: String(chefId),
+      }
+    });
+    if (!link) {
+      res.status(404).json({ message: "Chef Link not found" });
+      return;
+    }
+    await prisma.link.delete({
+      where: {
+        id: String(id),
+      }
+    })
+    res.json({ message: "Chef Link deleted" });
+  } catch(error) {
+    console.error(error);
+    return res.status(500).json({ message: "Something went wrong" });
+  }
+}
