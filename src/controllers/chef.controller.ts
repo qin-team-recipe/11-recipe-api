@@ -311,3 +311,35 @@ export const createChefLink: Handler = async (req: Request, res: Response) => {
     return res.status(500).json({ message: "Something went wrong" });
   }
 }
+
+/**
+ * Get chef link
+ * @route {GET} /chefs/:chefId/links/:id
+ * @param req
+ * @param res
+ * @returns chef link
+ */
+
+export const getChefLink : Handler = async (req: Request, res: Response) => {
+  try {
+    const { id, chefId } = req.params;
+    if (!id || !chefId) {
+      res.status(400).json({ message: "ChefId and Id is required" });
+      return;
+    }
+    const link = await prisma.link.findFirst({
+      where: {
+        id: String(id),
+        chefId: String(chefId),
+      }
+    });
+    if (!link) {
+      res.status(404).json({ message: "Chef Link not found" });
+      return;
+    }
+    res.json(link);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Something went wrong" });
+  }
+}
