@@ -45,7 +45,7 @@ export const getPopularChefs: Handler = async (req: Request, res: Response) => {
           _count: "desc",
         },
       },
-      take: 100,
+      take: 10,
     });
 
     let chefWithCount = chefs.map((chef) => ({
