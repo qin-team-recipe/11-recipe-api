@@ -48,14 +48,14 @@ export const getPopularChefs: Handler = async (req: Request, res: Response) => {
       take: 10,
     });
 
-    let chefWithCount = chefs.map((chef) => ({
+    let popularChefs = chefs.map((chef) => ({
       name: chef.name,
       imageUrl: chef.imageUrl,
       beforeThreeDaysFollowers: chef._count.follows,
       AllFollowers: chef.follows.length,
     }));
 
-    res.json(chefWithCount);
+    res.json(popularChefs);
   } catch (error) {
     res.status(500).json({ error: "Internal Server Error" });
   }
