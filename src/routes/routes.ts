@@ -2,8 +2,14 @@ import { Router } from "express";
 
 import { router as recipeRouter } from "./recipe.routes";
 import { router as chefRouter } from "./chef.routes";
+import { router as userRouter } from "./user.routes";
+import { router as shoppingMemoRouter } from "./shoppingMemo.routes";
 
-const api = Router().use(recipeRouter).use(chefRouter);
+const api = Router()
+  .use(recipeRouter)
+  .use(chefRouter)
+  .use(shoppingMemoRouter)
+  .use(userRouter);
 
 export default Router().use("/api/v1", api);
 

@@ -1,5 +1,5 @@
-import { PrismaClient, Chef, Recipe } from "@prisma/client";
+import { PrismaClient, Chef, Recipe, ShoppingMemo, User } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-export { prisma, Chef, Recipe };
+export { prisma, Chef, Recipe, ShoppingMemo, User };
