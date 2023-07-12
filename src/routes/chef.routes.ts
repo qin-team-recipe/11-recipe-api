@@ -5,9 +5,12 @@ import {
   getChefById,
   updateChef,
   deleteChef,
+  getPopularChefs,
 } from "../controllers/chef.controller";
 
 export const router = Router();
+
+router.get("/chefs/popular", getPopularChefs);
 
 /**
  * @swagger
