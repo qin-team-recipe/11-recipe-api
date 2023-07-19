@@ -30,5 +30,8 @@
   },
   "prisma": {
     "seed": "ts-node prisma/seed.ts"
+  },
+  "dependencies": {
+    "express-validator": "^7.0.1"
   }
 }
