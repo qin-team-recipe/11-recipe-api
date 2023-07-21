@@ -117,11 +117,6 @@ export const createChef: Handler = async (
   res: Response,
   next: NextFunction
 ) => {
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return res.status(400).json({ errors: errors.array() });
-  }
-
   try {
     const {
       name,
@@ -130,7 +125,7 @@ export const createChef: Handler = async (
       imageUrl,
     }: {
       name: string;
-      userId: string | null;
+      userId: string;
       profile: string | null;
       imageUrl: string | null;
     } = req.body;
@@ -206,11 +201,6 @@ export const updateChef: Handler = async (
   res: Response,
   next: NextFunction
 ) => {
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return res.status(400).json({ errors: errors.array() });
-  }
-
   try {
     const {
       name,

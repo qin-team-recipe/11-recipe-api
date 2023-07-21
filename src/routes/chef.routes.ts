@@ -8,6 +8,7 @@ import {
   deleteChef,
   getPopularChefs,
 } from "../controllers/chef.controller";
+import { validationErrorHandler } from "../utils/express-validator";
 
 export const router = Router();
 
@@ -79,7 +80,7 @@ router.get("/chefs", getChefs);
  *       500:
  *         description: Internal server error
  */
-router.post("/chefs", createChefValidator, createChef);
+router.post("/chefs", createChefValidator, validationErrorHandler, createChef);
 
 /**
  * @swagger
@@ -149,7 +150,7 @@ router.get("/chefs/:id", getChefById);
  *       500:
  *         description: Internal server error
  */
-router.put("/chefs/:id", updateChefValidator, updateChef);
+router.put("/chefs/:id", updateChefValidator, validationErrorHandler, updateChef);
 
 /**
  * @swagger
