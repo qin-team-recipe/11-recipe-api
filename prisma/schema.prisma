@@ -1,13 +1,9 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
   provider = "postgresql"
-  // TODO: add the correct database connection string
   url      = env("DATABASE_URL")
 }
 
@@ -36,7 +32,8 @@ enum RecipeStatus {
 
 model User {
   id            String         @id @default(uuid())
-  name          String         @db.VarChar(255)
+  googleId      String?        @unique @map("google_id")
+  name          String?        @db.VarChar(255)
   email         String         @unique @db.VarChar(255)
   createdAt     DateTime       @default(now()) @map("created_at")
   updatedAt     DateTime       @updatedAt @map("updated_at")
