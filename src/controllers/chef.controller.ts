@@ -4,6 +4,64 @@ import { prisma, Chef } from "../../prisma/prisma-client";
 const router = Router();
 
 /**
+ * Get popular chefs
+ * @route GET /chefs/popular
+ * @param req
+ * @param res
+ * @returns chefs
+ */
+export const getPopularChefs: Handler = async (req: Request, res: Response) => {
+  try {
+    const beforeThreeDays = new Date(
+      new Date().getTime() - 3 * 24 * 60 * 60 * 1000
+    );
+    let chefs = await prisma.chef.findMany({
+      include: {
+        follows: true,
+        _count: {
+          select: {
+            follows: {
+              where: {
+                createdAt: {
+                  gte: beforeThreeDays,
+                },
+              },
+            },
+          },
+        },
+      },
+      where: {
+        role: "CHEF",
+        follows: {
+          some: {
+            createdAt: {
+              gte: beforeThreeDays,
+            },
+          },
+        },
+      },
+      orderBy: {
+        follows: {
+          _count: "desc",
+        },
+      },
+      take: 10,
+    });
+
+    let popularChefs = chefs.map((chef) => ({
+      name: chef.name,
+      imageUrl: chef.imageUrl,
+      beforeThreeDaysFollowers: chef._count.follows,
+      AllFollowers: chef.follows.length,
+    }));
+
+    res.json(popularChefs);
+  } catch (error) {
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+/**
  * Get chefs
  * @route {GET} /chefs
  * @param req
