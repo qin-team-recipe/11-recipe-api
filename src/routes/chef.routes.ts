@@ -1,4 +1,5 @@
 import { Router } from "express";
+import { body } from "express-validator";
 import {
   createChef,
   getChefs,
@@ -7,8 +8,17 @@ import {
   deleteChef,
   getPopularChefs,
 } from "../controllers/chef.controller";
+import { validationErrorHandler } from "../utils/express-validator";
 
 export const router = Router();
+
+const createChefValidator = [
+  body("name").notEmpty().withMessage("name is required"),
+  body("userId").notEmpty().withMessage("userId is required"),
+];
+const updateChefValidator = [
+  body("name").notEmpty().withMessage("name is required"),
+];
 
 router.get("/chefs/popular", getPopularChefs);
 
@@ -70,7 +80,7 @@ router.get("/chefs", getChefs);
  *       500:
  *         description: Internal server error
  */
-router.post("/chefs", createChef);
+router.post("/chefs", createChefValidator, validationErrorHandler, createChef);
 
 /**
  * @swagger
@@ -140,7 +150,7 @@ router.get("/chefs/:id", getChefById);
  *       500:
  *         description: Internal server error
  */
-router.put("/chefs/:id", updateChef);
+router.put("/chefs/:id", updateChefValidator, validationErrorHandler, updateChef);
 
 /**
  * @swagger
