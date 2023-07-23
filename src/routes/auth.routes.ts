@@ -1,20 +1,26 @@
 import { Request, Response, NextFunction, Router } from "express";
 import passport from "passport";
+import { VerifyCallback } from "passport-google-oauth2";
 import { prisma } from "../../prisma/prisma-client";
 
 export const router = Router();
 
 const isLoggedIn = (req: Request, res: Response, next: NextFunction) => {
-  // TODO: passportで良い？
   req.session.passport ? next() : res.sendStatus(401);
 };
 
-passport.serializeUser((user: any, done: any) => {
+passport.serializeUser((user: any, done: VerifyCallback) => {
   done(null, user);
 });
 
-passport.deserializeUser((user: any, done: any) => {
+passport.deserializeUser((user: any, done: VerifyCallback) => {
   done(null, user);
+});
+
+router.get("/is_logged_in", (req: Request, res: Response) => {
+  req.session.passport
+    ? res.json({ loggedIn: true })
+    : res.json({ loggedIn: false });
 });
 
 router.get(
