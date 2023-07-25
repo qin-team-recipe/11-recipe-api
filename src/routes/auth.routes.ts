@@ -41,7 +41,7 @@ router.get(
   isLoggedIn,
   async (req: Request, res: Response) => {
     try {
-      const googleId = req.user?.id;
+      const googleId = req.session.passport.user.id;
       const user = await prisma.user.findUnique({
         where: { googleId },
       });
