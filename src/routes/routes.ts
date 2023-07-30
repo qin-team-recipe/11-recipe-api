@@ -4,7 +4,7 @@ import { router as recipeRouter } from "./recipe.routes";
 import { router as chefRouter } from "./chef.routes";
 import { router as authRouter } from "./auth.routes";
 
-const api = Router().use(authRouter).use(recipeRouter).use(chefRouter);
+const api = Router().use(authRouter).use(recipeRouter);
 
 export default Router().use("/api/v1", api);
 
