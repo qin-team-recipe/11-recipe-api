@@ -19,7 +19,7 @@ passport.deserializeUser((user: any, done: VerifyCallback) => {
 
 router.get("/is_logged_in", (req: Request, res: Response) => {
   req.session.passport
-    ? res.json({ loggedIn: true })
+    ? res.json(req.session.passport)
     : res.json({ loggedIn: false });
 });
 
@@ -50,7 +50,7 @@ router.get(
       }
       // ニックネームがない場合はregisterに飛ばす
       if (!user.name) {
-        return res.redirect("/register");
+        return res.redirect("http://localhost:3000/register/");
       }
       res.redirect("/");
     } catch (error) {
