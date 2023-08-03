@@ -4,6 +4,9 @@ import {
   deleteShoppingMemo,
   updateShoppingMemo,
   getShoppingMemoListByUser,
+  deleteShoppingMemoListByCompleted,
+  deleteShoppingMemoList,
+  changePositionShoppingMemo,
 } from "../controllers/shoppingMemo.controller";
 
 export const router = Router();
@@ -14,7 +17,20 @@ router.put(
   "/users/:userId/shopping-memo-list/:shoppingMemoId",
   updateShoppingMemo
 );
+
+router.delete("/users/:userId/shopping-memo-list", deleteShoppingMemoList);
+
+router.delete(
+  "/users/:userId/shopping-memo-list/completed",
+  deleteShoppingMemoListByCompleted
+);
+
 router.delete(
   "/users/:userId/shopping-memo-list/:shoppingMemoId",
   deleteShoppingMemo
+);
+
+router.put(
+  "/users/:userId/shopping-memo-list/:shoppingMemoId/move/:position/",
+  changePositionShoppingMemo
 );
