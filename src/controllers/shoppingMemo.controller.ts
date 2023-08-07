@@ -213,7 +213,7 @@ export const changePositionShoppingMemo: Handler = async (
       where: { id: shoppingMemoId, user: { id: userId } },
     });
     if (!shoppingMemo) {
-      return res.status(404).json({ message: "ShoppingMemoList not found" });
+      return res.status(404).json({ message: "ShoppingMemo not found" });
     }
     // positionがupの場合
     if (position === "up") {
@@ -224,9 +224,7 @@ export const changePositionShoppingMemo: Handler = async (
           where: { userId: userId, sortOrder: prevOrder },
         });
         if (!downShoppingMemo) {
-          return res
-            .status(404)
-            .json({ message: "ShoppingMemoList not found" });
+          return res.status(404).json({ message: "ShoppingMemo not found" });
         }
         // positionを入れ替える
         await prisma.shoppingMemo.update({
@@ -251,7 +249,7 @@ export const changePositionShoppingMemo: Handler = async (
         where: { userId: userId, sortOrder: prevOrder },
       });
       if (!upShoppingMemo) {
-        return res.status(404).json({ message: "ShoppingMemoList not found" });
+        return res.status(404).json({ message: "ShoppingMemo not found" });
       }
       // positionを入れ替える
       await prisma.shoppingMemo.update({
@@ -267,7 +265,7 @@ export const changePositionShoppingMemo: Handler = async (
         },
       });
     }
-    return res.json({ message: "ShoppingMemoList deleted" });
+    return res.json({ message: "ShoppingMemo position changed" });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ message: "Internal Server Error" });
