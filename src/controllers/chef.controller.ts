@@ -1,4 +1,5 @@
 import { Handler, NextFunction, Request, Response, Router } from "express";
+import { validationResult } from "express-validator";
 import { prisma, Chef } from "../../prisma/prisma-client";
 
 const router = Router();
@@ -119,33 +120,20 @@ export const createChef: Handler = async (
   try {
     const {
       name,
-      role,
       userId,
       profile,
       imageUrl,
     }: {
       name: string;
-      role: "USER" | "CHEF";
-      userId: string | null;
+      userId: string;
       profile: string | null;
       imageUrl: string | null;
     } = req.body;
 
-    if (!name || !role) {
-      if (role === "USER" && !userId) {
-        res
-          .status(400)
-          .json({ message: "Name, and role and userId are required" });
-        return;
-      }
-      res.status(400).json({ message: "Name, and role are required" });
-      return;
-    }
-
     const chef = await prisma.chef.create({
       data: {
         name: name,
-        role: role,
+        role: "USER",
         userId: userId,
         profile: profile,
         imageUrl: imageUrl,

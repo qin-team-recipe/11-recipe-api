@@ -5,13 +5,9 @@ import { router as chefRouter } from "./chef.routes";
 import { router as userRouter } from "./user.routes";
 import { router as shoppingMemoRouter } from "./shoppingMemo.routes";
 import { router as shoppingListRouter } from "./shoppingList.routes";
+import { router as authRouter } from "./auth.routes";
 
-const api = Router()
-  .use(recipeRouter)
-  .use(chefRouter)
-  .use(shoppingMemoRouter)
-  .use(shoppingListRouter)
-  .use(userRouter);
+const api = Router().use(authRouter).use(recipeRouter).use(chefRouter).use(shoppingMemoRouter).use(shoppingListRouter).use(userRouter);
 
 export default Router().use("/api/v1", api);
 
