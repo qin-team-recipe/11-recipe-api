@@ -173,7 +173,7 @@ model ShoppingList {
   userId                  String                   @map("user_id")
   recipe                  Recipe                   @relation(fields: [recipeId], references: [id])
   recipeId                String                   @map("recipe_id")
-  sortOrder               Int                      @map("sort_order") @db.SmallInt
+  sortOrder               Int                      @default(0) @map("sort_order") @db.SmallInt
   createdAt               DateTime                 @default(now()) @map("created_at")
   updatedAt               DateTime                 @updatedAt @map("updated_at")
   shoppingListIngredients ShoppingListIngredient[]
@@ -187,6 +187,7 @@ model ShoppingListIngredient {
   shoppingListId String       @map("shopping_list_id")
   name           String       @db.VarChar(255)
   isBought       Boolean      @default(false) @map("is_bought")
+  sortOrder      Int          @default(0) @map("sort_order") @db.SmallInt
   createdAt      DateTime     @default(now()) @map("created_at")
   updatedAt      DateTime     @updatedAt @map("updated_at")
 
@@ -199,6 +200,7 @@ model ShoppingMemo {
   userId    String   @map("user_id")
   text      String   @db.VarChar(255)
   isBought  Boolean  @default(false) @map("is_bought")
+  sortOrder Int      @default(0) @map("sort_order") @db.SmallInt
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
