@@ -1,11 +1,14 @@
 import { Router } from "express";
 import {
+  getTopicRecipes,
   getRecipes,
   getRecipe,
   createRecipe,
 } from "../controllers/recipe.controller";
 
 export const router = Router();
+
+router.get("/recipes/topic", getTopicRecipes);
 
 /**
  * @swagger
