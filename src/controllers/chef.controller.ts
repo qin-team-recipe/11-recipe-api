@@ -1,4 +1,5 @@
 import { Handler, NextFunction, Request, Response, Router } from "express";
+import { validationResult } from "express-validator";
 import { prisma, Chef, Link } from "../../prisma/prisma-client";
 
 const router = Router();
@@ -9,6 +10,64 @@ type ChefLinkBody = {
   siteName: Link["siteName"];
   url: Link["url"];
   accountName?: Link["accountName"];
+};
+
+/**
+ * Get popular chefs
+ * @route GET /chefs/popular
+ * @param req
+ * @param res
+ * @returns chefs
+ */
+export const getPopularChefs: Handler = async (req: Request, res: Response) => {
+  try {
+    const beforeThreeDays = new Date(
+      new Date().getTime() - 3 * 24 * 60 * 60 * 1000
+    );
+    let chefs = await prisma.chef.findMany({
+      include: {
+        follows: true,
+        _count: {
+          select: {
+            follows: {
+              where: {
+                createdAt: {
+                  gte: beforeThreeDays,
+                },
+              },
+            },
+          },
+        },
+      },
+      where: {
+        role: "CHEF",
+        follows: {
+          some: {
+            createdAt: {
+              gte: beforeThreeDays,
+            },
+          },
+        },
+      },
+      orderBy: {
+        follows: {
+          _count: "desc",
+        },
+      },
+      take: 10,
+    });
+
+    let popularChefs = chefs.map((chef) => ({
+      name: chef.name,
+      imageUrl: chef.imageUrl,
+      beforeThreeDaysFollowers: chef._count.follows,
+      AllFollowers: chef.follows.length,
+    }));
+
+    res.json(popularChefs);
+  } catch (error) {
+    res.status(500).json({ error: "Internal Server Error" });
+  }
 };
 
 /**
@@ -69,33 +128,20 @@ export const createChef: Handler = async (
   try {
     const {
       name,
-      role,
       userId,
       profile,
       imageUrl,
     }: {
       name: string;
-      role: "USER" | "CHEF";
-      userId: string | null;
+      userId: string;
       profile: string | null;
       imageUrl: string | null;
     } = req.body;
 
-    if (!name || !role) {
-      if (role === "USER" && !userId) {
-        res
-          .status(400)
-          .json({ message: "Name, and role and userId are required" });
-        return;
-      }
-      res.status(400).json({ message: "Name, and role are required" });
-      return;
-    }
-
     const chef = await prisma.chef.create({
       data: {
         name: name,
-        role: role,
+        role: "USER",
         userId: userId,
         profile: profile,
         imageUrl: imageUrl,
