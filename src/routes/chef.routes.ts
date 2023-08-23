@@ -6,6 +6,11 @@ import {
   getChefById,
   updateChef,
   deleteChef,
+  getChefLinks,
+  createChefLink,
+  getChefLink,
+  updateChefLink,
+  deleteChefLink,
   getPopularChefs,
 } from "../controllers/chef.controller";
 import { validationErrorHandler } from "../utils/express-validator";
@@ -178,3 +183,226 @@ router.put("/chefs/:id", updateChefValidator, validationErrorHandler, updateChef
  *         description: Internal server error
  */
 router.delete("/chefs/:id", deleteChef);
+
+/**
+ * @swagger
+ * /chefs/{chefId}/links:
+ *   get:
+ *     summary: Return a chef links
+ *     tags:
+ *       - chef
+ *     description: Get a chef links
+ *     operationId: getChefLinks
+ *     parameters:
+ *       - name: chefId
+ *         in: path
+ *         description: chef id (uuid)
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *        200:
+ *          description: The list of chef links.
+ *          content:
+ *            application/json:
+ *              schema:
+ *                type: array
+ *                items:
+ *                  $ref: '#/components/schemas/link'
+ *        400:
+ *          description: chefId is required.
+ *        404:
+ *          description: Chef Link not found.
+ *        500:
+ *          description: Internal server error.
+ */
+router.get("/chefs/:chefId/links", getChefLinks);
+
+/**
+ * @swagger
+ * /chefs/{chefId}/links:
+ *   post:
+ *     summary: Create a new chef link
+ *     tags:
+ *       - chef
+ *     description: Create a new chef link
+ *     operationId: createChefLink
+ *     parameters:
+ *       - name: chefId
+ *         in: path
+ *         description: chef id (uuid)
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       description: Chef link object that needs to be added to the store
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/link'
+ *     responses:
+ *       200:
+ *         description: Created chef link
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/link'
+ *       400:
+ *         description: Bad request.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               oneOf:
+ *                 - $ref: '#/components/schemas/ErrorChefIdRequired'
+ *                 - $ref: '#/components/schemas/ErrorFieldMissing'
+ *             examples:
+ *               ErrorChefIdRequired:
+ *                 value:
+ *                   status: 400
+ *                   message: chefId is required.
+ *               ErrorFieldMissing:
+ *                 value:
+ *                   status: 400
+ *                   message: Required field is missing.
+ *       404:
+ *         description: Chef not found.
+ *       409:
+ *         description: Link with the same siteType already exists.
+ *       500:
+ *         description: Internal server error.
+ */
+router.post("/chefs/:chefId/links", createChefLink);
+
+/**
+ * @swagger
+ * /chefs/{chefId}/links/{id}:
+ *   get:
+ *     summary: Return a chef link
+ *     tags:
+ *       - chef
+ *     description: Get a chef link
+ *     operationId: getChefLink
+ *     parameters:
+ *       - name: chefId
+ *         in: path
+ *         description: chef id (uuid)
+ *         required: true
+ *         schema:
+ *           type: string
+ *       - name: id
+ *         in: path
+ *         description: link id (uuid)
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *        200:
+ *          description: Chef link object.
+ *          content:
+ *            application/json:
+ *              schema:
+ *                $ref: '#/components/schemas/link'
+ *        400:
+ *          description: chefId and Id is required.
+ *        404:
+ *          description: Chef Link not found.
+ *        500:
+ *          description: Internal server error.
+ */
+router.get("/chefs/:chefId/links/:id", getChefLink);
+
+/**
+ * @swagger
+ * /chefs/{chefId}/links/{id}:
+ *   put:
+ *     summary: Update a chef link
+ *     tags:
+ *       - chef
+ *     description: Update a chef link
+ *     operationId: updateChefLink
+ *     parameters:
+ *       - name: chefId
+ *         in: path
+ *         description: chef id (uuid)
+ *         required: true
+ *         schema:
+ *           type: string
+ *       - name: id
+ *         in: path
+ *         description: link id (uuid)
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/link'
+ *     responses:
+ *       200:
+ *         description: Updated chef link.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/link'
+ *       400:
+ *         description: Bad request.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               oneOf:
+ *                 - $ref: '#/components/schemas/ErrorIdRequired'
+ *                 - $ref: '#/components/schemas/ErrorFieldMissing'
+ *             examples:
+ *               ErrorIdRequired:
+ *                 value:
+ *                   status: 400
+ *                   message: chefId and Id is required.
+ *               ErrorFieldMissing:
+ *                 value:
+ *                   status: 400
+ *                   message: Required field is missing.
+ *       404:
+ *         description: Chef link not found.
+ *       409:
+ *         description: Link with the same siteType already exists.
+ *       500:
+ *         description: Internal server error.
+ */
+router.put("/chefs/:chefId/links/:id", updateChefLink);
+
+/**
+ * @swagger
+ * /chefs/{chefId}/links/{id}:
+ *   delete:
+ *     summary: Delete a chef link
+ *     tags:
+ *       - chef
+ *     description: Delete a chef link
+ *     operationId: deleteChefLink
+ *     parameters:
+ *       - name: chefId
+ *         in: path
+ *         description: chef id (uuid)
+ *         required: true
+ *         schema:
+ *           type: string
+ *       - name: id
+ *         in: path
+ *         description: link id (uuid)
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *        200:
+ *          description: Deleted chef link.
+ *        400:
+ *          description: chefId and Id is required.
+ *        404:
+ *          description: Chef Link not found.
+ *        500:
+ *          description: Internal server error.
+ */
+router.delete("/chefs/:chefId/links/:id", deleteChefLink);

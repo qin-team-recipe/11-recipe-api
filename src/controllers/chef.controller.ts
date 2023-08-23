@@ -1,8 +1,16 @@
 import { Handler, NextFunction, Request, Response, Router } from "express";
 import { validationResult } from "express-validator";
-import { prisma, Chef } from "../../prisma/prisma-client";
+import { prisma, Chef, Link } from "../../prisma/prisma-client";
 
 const router = Router();
+
+type ChefLinkBody = {
+  siteType: Link["siteType"];
+  chefId: Chef["id"];
+  siteName: Link["siteName"];
+  url: Link["url"];
+  accountName?: Link["accountName"];
+};
 
 /**
  * Get popular chefs
@@ -268,4 +276,212 @@ export const deleteChef: Handler = async (
   }
 };
 
+/**
+ * Get chef links
+ * @route {GET} /chefs/:chefId/links
+ * @param req
+ * @param res
+ * @returns chef links
+ */
+export const getChefLinks: Handler = async (req: Request, res: Response) => {
+  try {
+    const links = await prisma.link.findMany({
+      where: {
+        chefId: String(req.params.chefId),
+      },
+    });
+    if (links.length === 0) {
+      res.status(404).json({ message: "Chef Links not found" });
+    } else {
+      res.json(links);
+    }
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Something went wrong" });
+  }
+};
+
 export default router;
+
+/**
+ * Create chef link
+ * @route {POST} /chefs/:chefId/links
+ * @param req
+ * @param res
+ * @returns { message: "Link created" }
+ */
+
+export const createChefLink: Handler = async (req: Request, res: Response) => {
+  try {
+    const { chefId } = req.params;
+    if (!chefId) {
+      res.status(400).json({ message: "ChefId is required" });
+      return;
+    }
+    const chef = await prisma.chef.findUnique({
+      where: {
+        id: String(chefId),
+      },
+    });
+    if (!chef) {
+      res.status(404).json({ message: "Chef not found" });
+      return;
+    }
+    const { siteType, siteName, url, accountName } : ChefLinkBody = req.body;
+    if (!siteType || !siteName || !url ) {
+      res.status(400).json({ message: "Required field is missing" });
+      return;
+    }
+    const existingLink = await prisma.link.findFirst({
+      where: {
+        siteType: siteType,
+        chefId: String(chefId),
+      },
+    })
+    if (existingLink) {
+      res.status(409).json({ message: "Chef Link with the same siteType already exists" });
+      return;
+    }
+    await prisma.link.create({
+      data: {
+        siteType: siteType,
+        siteName: siteName,
+        url: url,
+        accountName: accountName,
+        chefId: chefId,
+      },
+    });
+    res.json({ message: "Chef Link created" });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Something went wrong" });
+  }
+}
+
+/**
+ * Get chef link
+ * @route {GET} /chefs/:chefId/links/:id
+ * @param req
+ * @param res
+ * @returns chef link
+ */
+
+export const getChefLink : Handler = async (req: Request, res: Response) => {
+  try {
+    const { id, chefId } = req.params;
+    if (!id || !chefId) {
+      res.status(400).json({ message: "ChefId and Id is required" });
+      return;
+    }
+    const link = await prisma.link.findFirst({
+      where: {
+        id: String(id),
+        chefId: String(chefId),
+      }
+    });
+    if (!link) {
+      res.status(404).json({ message: "Chef Link not found" });
+      return;
+    }
+    res.json(link);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Something went wrong" });
+  }
+}
+
+/**
+ * Update chef link
+ * @route {PUT} /chefs/:chefId/links/:id
+ * @param req
+ * @param res
+ * @returns chef link
+*/
+
+export const updateChefLink : Handler = async (req: Request, res: Response) => {
+  try {
+    const { id, chefId } = req.params;
+    if (!id || !chefId) {
+      res.status(400).json({ message: "ChefId and Id is required" });
+      return;
+    }
+    const link = await prisma.link.findFirst({
+      where: {
+        id: String(id),
+        chefId: String(chefId),
+      }
+    });
+    if (!link) {
+      res.status(404).json({ message: "Chef Link not found" });
+      return;
+    }
+    const { siteType = link.siteType, siteName = link.siteName, url = link.url, accountName } : ChefLinkBody = req.body;
+    if (!siteType || !siteName || !url ) {
+      res.status(400).json({ message: "Required field is missing" });
+      return;
+    }
+    const existingLink = await prisma.link.findFirst({
+      where: {
+        chefId: link.chefId, // 同じ chefId を持つ他の Link を検索
+        siteType: siteType, // 更新しようとしている siteType と一致するものを検索
+      },
+    });
+     // 更新しようとしているリンクのsiteType以外に同じstyeTypeのLinkが存在している場合はエラー
+    if (existingLink && link.siteType !== siteType) {
+      res.status(409).json({ message: "Chef Link with the same siteType already exists" });
+      return;
+    }
+    await prisma.link.update({
+      where: {
+        id: String(id),
+      },
+      data: {
+        siteType: siteType,
+        siteName: siteName,
+        url: url,
+        accountName: accountName,
+      }
+    })
+    res.json({ message: "Chef Link updated" });
+  } catch(error) {
+    console.error(error);
+    return res.status(500).json({ message: "Something went wrong" });
+  }
+}
+
+/**
+ * Delete chef link
+ * @route {DELETE} /chefs/:chefId/links/:id
+ * @param req
+ * @param res
+ * @returns { message: "Chef Link deleted" }
+*/
+
+export const deleteChefLink : Handler = async (req: Request, res: Response) => {
+  try {
+    const { id, chefId } = req.params;
+    if (!id || !chefId) {
+      res.status(400).json({ message: "ChefId and Id is required" });
+      return;
+    }
+    const link = await prisma.link.findFirst({
+      where: {
+        id: String(id),
+        chefId: String(chefId),
+      }
+    });
+    if (!link) {
+      res.status(404).json({ message: "Chef Link not found" });
+      return;
+    }
+    await prisma.link.delete({
+      where: {
+        id: String(id),
+      }
+    })
+    res.json({ message: "Chef Link deleted" });
+  } catch(error) {
+    console.error(error);
+    return res.status(500).json({ message: "Something went wrong" });
+  }
+}

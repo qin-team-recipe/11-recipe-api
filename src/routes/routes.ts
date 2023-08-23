@@ -65,6 +65,53 @@ export default Router().use("/api/v1", api);
 
 /**
  * @swagger
+ * components:
+ *   schemas:
+ *     link:
+ *       type: object
+ *       required:
+ *         - id
+ *         - site_type
+ *         - chef_id
+ *         - site_name
+ *         - url
+ *       properties:
+ *         id:
+ *           type: string
+ *           description: 自動生成されたUUID
+ *           example: asdf5488_44dfDU
+ *         site_type:
+ *           type: string
+ *           description: サイトの種類
+ *           example: INSTAGRAM
+ *         chef_id:
+ *           type: string
+ *           description: シェフのid
+ *           example: asdf5488_44dfDU
+ *         site_name:
+ *           type: string
+ *           description: サイトの名前
+ *           example: Instagram
+ *         url:
+ *           type: string
+ *           description: サイトのURL
+ *           example: https://www.instagram.com/instagram/
+ *         account_name:
+ *           type: string
+ *           description: アカウント名
+ *           example: Carlotta22
+ *         created_at:
+ *           type: string
+ *           description: 作成日時
+ *           example: 2020-01-01T00:00:00.000Z
+ *         updated_at:
+ *           type: string
+ *           description: 更新日時
+ *           example: 2020-01-01T00:00:00.000Z
+ */
+
+/**
+ * @swagger
  * tags:
  *  - name: recipe
  *    description: Recipes endpoint
@@ -85,6 +132,26 @@ export default Router().use("/api/v1", api);
  *           type: string
  *           description: 自動生成されたUUID
  *           example: asdf5488_44dfDU
+ *         site_type:
+ *           type: string
+ *           description: サイトの種類
+ *           example: INSTAGRAM
+ *         chef_id:
+ *           type: string
+ *           description: シェフのid
+ *           example: asdf5488_44dfDU
+ *         site_name:
+ *           type: string
+ *           description: サイトの名前
+ *           example: Instagram
+ *         url:
+ *           type: string
+ *           description: サイトのURL
+ *           example: https://www.instagram.com/instagram/
+ *         account_name:
+ *           type: string
+ *           description: アカウント名
+ *           example: Carlotta22
  *         chefId:
  *           type: string
  *           description: レシピを投稿したシェフのid
