@@ -19,4 +19,5 @@ export {
   ShoppingList,
   ShoppingListIngredient,
   User,
+  Link,
 };
