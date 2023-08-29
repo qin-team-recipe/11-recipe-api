@@ -14,6 +14,63 @@ type CreateRecipeBody = {
 
 /**
  * Get recipes
+ * @route {GET} /recipes/topic
+ * @returns recipes
+ */
+export const getTopicRecipes: Handler = async (req: Request, res: Response) => {
+  try {
+    const beforeThreeDays = new Date(
+      new Date().getTime() - 3 * 24 * 60 * 60 * 1000
+    );
+    const recipes = await prisma.recipe.findMany({
+      include: {
+        likes: true,
+        recipeImages: true,
+        _count: {
+          select: {
+            likes: {
+              where: {
+                createdAt: {
+                  gte: beforeThreeDays,
+                },
+              },
+            },
+          },
+        },
+      },
+      where: {
+        likes: {
+          some: {
+            createdAt: {
+              gte: beforeThreeDays,
+            },
+          },
+        },
+      },
+      orderBy: {
+        likes: {
+          _count: "desc",
+        },
+      },
+      take: 10,
+    });
+
+    let topicRecipes = recipes.map((recipe) => ({
+      name: recipe.name,
+      imageUrl: recipe.recipeImages[0],
+      beforeThreeDaysLikes: recipe._count.likes,
+      AllLikes: recipe.likes.length,
+    }));
+
+    return res.json(topicRecipes);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+/**
+ * Get recipes
  * @route {GET} /recipes
  * @returns recipes
  */
