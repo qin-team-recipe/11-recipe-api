@@ -150,4 +150,55 @@ export const createRecipe: Handler = async (req: Request, res: Response) => {
   }
 };
 
-export default router;
+/**
+ * Get recipes by chef id
+ * @route {GET} /chefs/{chefId}/recipes
+ * @returns recipes
+ */
+export const getRecipesByChefId: Handler = async (
+  req: Request,
+  res: Response
+) => {
+  try {
+    const sort = req.query.sort;
+    if (sort === "popular") {
+      const recipes = await prisma.chef
+        .findUnique({
+          where: { id: req.params.chefId },
+        })
+        .recipes({
+          include: {
+            recipeImages: true,
+            _count: {
+              select: { likes: true },
+            },
+          },
+          orderBy: {
+            likes: {
+              _count: "desc",
+            },
+          },
+        });
+      return res.json(recipes);
+    }
+    const recipes = await prisma.chef
+      .findUnique({
+        where: { id: req.params.chefId },
+      })
+      .recipes({
+        include: {
+          recipeImages: true,
+          _count: {
+            select: { likes: true },
+          },
+        },
+        orderBy: {
+          createdAt: "desc",
+        },
+      });
+    return res.json(recipes);
+  } catch (error) {
+    console.error(error);
+    return res.status(404).json({ message: "Recipes not found" });
+  }
+};
