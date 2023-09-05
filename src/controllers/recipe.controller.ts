@@ -150,4 +150,166 @@ export const createRecipe: Handler = async (req: Request, res: Response) => {
   }
 };
 
-export default router;
+/**
+ * Get recipes by chef id
+ * @route {GET} /chefs/{chefId}/recipes
+ * @returns recipes
+ */
+export const getRecipesByChefId: Handler = async (
+  req: Request,
+  res: Response
+) => {
+  try {
+    const sort = req.query.sort;
+    if (sort === "popular") {
+      const recipes = await prisma.chef
+        .findUnique({
+          where: { id: req.params.chefId },
+        })
+        .recipes({
+          include: {
+            recipeImages: true,
+            _count: {
+              select: { likes: true },
+            },
+          },
+          orderBy: {
+            likes: {
+              _count: "desc",
+            },
+          },
+        });
+      return res.json(recipes);
+    }
+    const recipes = await prisma.chef
+      .findUnique({
+        where: { id: req.params.chefId },
+      })
+      .recipes({
+        include: {
+          recipeImages: true,
+          _count: {
+            select: { likes: true },
+          },
+        },
+        orderBy: {
+          createdAt: "desc",
+        },
+      });
+    return res.json(recipes);
+  } catch (error) {
+    console.error(error);
+    return res.status(404).json({ message: "Recipes not found" });
+  }
+};
+
+/**
+ * フォローしているシェフ一覧を取得する
+ * Get recipes by user id
+ * @route {GET} /users/{userId}/following-chefs
+ * @returns recipes
+ */
+export const getFollowingChefs: Handler = async (
+  req: Request,
+  res: Response
+) => {
+  try {
+    // レシピの新着順にシェフを取得する
+    const followedChefs = await prisma.follow.findMany({
+      where: { userId: req.params.userId },
+      select: {
+        chefId: true,
+      },
+    });
+    const followedChefsIds = followedChefs.map((followedChef) => {
+      return followedChef.chefId;
+    });
+    const chefsWithRecipes = await prisma.chef.findMany({
+      where: {
+        id: {
+          in: followedChefsIds,
+        },
+      },
+      include: {
+        recipes: {
+          orderBy: {
+            createdAt: "desc",
+          },
+        },
+      },
+    });
+    return res.json(chefsWithRecipes);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+/**
+ * フォローしているシェフのレシピ一覧を取得する
+ * Get recipes by user id
+ * @route {GET} /users/{userId}/following-chefs/recipes
+ * @returns recipes
+ */
+export const getFollowingChefsRecipes: Handler = async (
+  req: Request,
+  res: Response
+) => {
+  try {
+    const follows = await prisma.follow.findMany({
+      where: { userId: req.params.userId },
+    });
+    const recipes = await prisma.recipe.findMany({
+      where: {
+        chefId: {
+          in: follows.map((follow) => follow.chefId),
+        },
+      },
+      include: {
+        recipeImages: true,
+        _count: {
+          select: { likes: true },
+        },
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
+    return res.json(recipes);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+/**
+ * お気に入りのレシピ
+ * Get like recipes by user id
+ * @route {GET} /users/{userId}/like-recipes
+ */
+export const getLikeRecipes: Handler = async (req: Request, res: Response) => {
+  try {
+    const recipes = await prisma.recipe.findMany({
+      where: {
+        likes: {
+          some: {
+            userId: req.params.userId,
+          },
+        },
+      },
+      include: {
+        recipeImages: true,
+        _count: {
+          select: { likes: true },
+        },
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
+    return res.json(recipes);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
