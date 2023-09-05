@@ -5,6 +5,8 @@ import {
   getRecipe,
   createRecipe,
   getRecipesByChefId,
+  getFollowingChefs,
+  getFollowingChefsRecipes,
 } from "../controllers/recipe.controller";
 
 export const router = Router();
@@ -33,3 +35,13 @@ router.post("/recipes", createRecipe);
  * シェフのレシピ一覧を取得する
  */
 router.get("/chefs/:chefId/recipes", getRecipesByChefId);
+
+/**
+ * フォローしているシェフ一覧を取得する
+ */
+router.get("/users/:userId/following-chefs", getFollowingChefs);
+
+/**
+ * フォローしているシェフのレシピ一覧を取得する
+ */
+router.get("/users/:userId/following-chefs/recipes", getFollowingChefsRecipes);
