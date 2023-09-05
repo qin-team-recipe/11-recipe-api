@@ -281,3 +281,35 @@ export const getFollowingChefsRecipes: Handler = async (
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
+
+/**
+ * お気に入りのレシピ
+ * Get like recipes by user id
+ * @route {GET} /users/{userId}/like-recipes
+ */
+export const getLikeRecipes: Handler = async (req: Request, res: Response) => {
+  try {
+    const recipes = await prisma.recipe.findMany({
+      where: {
+        likes: {
+          some: {
+            userId: req.params.userId,
+          },
+        },
+      },
+      include: {
+        recipeImages: true,
+        _count: {
+          select: { likes: true },
+        },
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
+    return res.json(recipes);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};

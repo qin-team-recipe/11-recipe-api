@@ -7,6 +7,7 @@ import {
   getRecipesByChefId,
   getFollowingChefs,
   getFollowingChefsRecipes,
+  getLikeRecipes,
 } from "../controllers/recipe.controller";
 
 export const router = Router();
@@ -45,3 +46,8 @@ router.get("/users/:userId/following-chefs", getFollowingChefs);
  * フォローしているシェフのレシピ一覧を取得する
  */
 router.get("/users/:userId/following-chefs/recipes", getFollowingChefsRecipes);
+
+/**
+ * お気に入りレシピ一覧を取得する
+ */
+router.get("/users/:userId/like-recipes", getLikeRecipes);
